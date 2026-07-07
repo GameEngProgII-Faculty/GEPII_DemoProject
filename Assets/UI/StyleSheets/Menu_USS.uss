@@ -38,20 +38,16 @@
     -unity-font-style: bold-and-italic;
 }
 
-.unity-progress-bar {    
-    height: 40px;
-    margin-bottom: 75px;
+.unity-progress-bar {
     font-size: 25px;
     -unity-font-style: bold;
 }
 
 .unity-progress-bar__container {
-    min-height: 40px;    
+    min-height: 40px;
     height: 40px;
 }
 
 .unity-progress-bar__progress {
     background-color: rgb(4, 125, 0);
 }
-
-

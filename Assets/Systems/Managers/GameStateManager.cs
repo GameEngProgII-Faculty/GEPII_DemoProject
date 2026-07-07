@@ -33,6 +33,8 @@ public class GameStateManager : MonoBehaviour
         currentState = newState; // Switch to the new state
         currentActiveState = currentState.ToString(); // Update debug info in inspector
         currentState.EnterState(); // Enter the new state
+
+        Debug.Log($"Switched from {lastActiveState} to {currentActiveState}");
     }
 
 

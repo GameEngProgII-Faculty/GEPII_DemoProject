@@ -210,6 +210,13 @@ public class PlayerController : MonoBehaviour
         {
             case MovementState.Crouching: { targetMoveSpeed = crouchMoveSpeed; break; }
             case MovementState.Sprinting: { targetMoveSpeed = sprintMoveSpeed; break; }
+            // Preserve sprint speed while jumping/falling if sprint input is still held
+            case MovementState.Jumping:
+            case MovementState.Falling:
+                {
+                    targetMoveSpeed = sprintInput ? sprintMoveSpeed : walkMoveSpeed;
+                    break;
+                }
             default: { targetMoveSpeed = walkMoveSpeed; break; }
         }
 

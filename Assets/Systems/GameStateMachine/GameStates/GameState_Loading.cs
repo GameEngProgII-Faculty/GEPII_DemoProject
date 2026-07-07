@@ -32,7 +32,10 @@ public class GameState_Loading : IState
         Cursor.visible = false;
 
         // Set timescale to 0f;
-        Time.timeScale = 0f;        
+        Time.timeScale = 0f;
+
+        uIManager.ShowLoadingScreenUI();
+
     }
 
     public void FixedUpdateState()

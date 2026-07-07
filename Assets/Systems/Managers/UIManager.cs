@@ -41,6 +41,7 @@ public class UIManager : MonoBehaviour
 
         mainMenuUI.rootVisualElement.style.display = DisplayStyle.Flex;
     }
+
     public void ShowPauseMenu()
     {
         HideAllUIMenus();
@@ -58,7 +59,6 @@ public class UIManager : MonoBehaviour
         HideAllUIMenus();
         loadingScreenUI.rootVisualElement.style.display = DisplayStyle.Flex;
     }
-
 
     public void HideAllUIMenus()
     {
