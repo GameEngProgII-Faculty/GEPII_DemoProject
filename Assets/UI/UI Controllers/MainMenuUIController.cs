@@ -61,9 +61,9 @@ public class MainMenuUIController : MonoBehaviour
 
         #region Subscribe to Button Click Events
 
-        playButton.clicked += OnPlayButtonClicked;
-        optionsButton.clicked += OnOptionsClicked;
-        quitButton.clicked += OnQuitButtonClicked;
+        if (playButton != null) playButton.clicked += OnPlayButtonClicked;
+        if (optionsButton != null) optionsButton.clicked += OnOptionsClicked;
+        if (quitButton != null) quitButton.clicked += OnQuitButtonClicked;
 
         #endregion
     }
@@ -86,7 +86,7 @@ public class MainMenuUIController : MonoBehaviour
     {
         Debug.Log("Play Clicked - Loading Level 1");
 
-        levelManager.LoadScene(1);
+        levelManager.LoadFirstGameplayLevel();
     }
 
     #endregion
@@ -96,9 +96,9 @@ public class MainMenuUIController : MonoBehaviour
     {
         #region UnSubscribe to Button Click Events
 
-        playButton.clicked -= OnPlayButtonClicked;
-        optionsButton.clicked -= OnOptionsClicked;
-        quitButton.clicked -= OnQuitButtonClicked;
+        if (playButton != null) playButton.clicked -= OnPlayButtonClicked;
+        if (optionsButton != null) optionsButton.clicked -= OnOptionsClicked;
+        if (quitButton != null) quitButton.clicked -= OnQuitButtonClicked;
 
         #endregion
     }

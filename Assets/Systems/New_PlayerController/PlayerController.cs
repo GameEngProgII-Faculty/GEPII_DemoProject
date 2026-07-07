@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;  
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -551,12 +552,21 @@ public class PlayerController : MonoBehaviour
     public void MovePlayerToSpawnpoint(string v)
     {
         // find an object in the scene with the script "PlayerSpawnpoint"
-
-        Transform targetSpawnpoint = FindFirstObjectByType<PlayerSpawnpoint>().transform;
-
         // this is very basic an only works if there is one spawnpoint in the scene, but works for now.
-
         // for a scene with multiple spawnpoints, we will need to find all the spawnpoints in the scene and store them in an array and then call the correct one based on ID.
+        PlayerSpawnpoint spawnpoint = FindFirstObjectByType<PlayerSpawnpoint>();
+
+        if (spawnpoint == null)
+        {
+            Debug.LogWarning($"No PlayerSpawnpoint found in scene '{SceneManager.GetActiveScene().name}' — skipping player move.");
+            return;
+        }
+
+        Transform targetSpawnpoint = spawnpoint.transform;
+
+
+
+    
 
 
         // Perform the actual move
