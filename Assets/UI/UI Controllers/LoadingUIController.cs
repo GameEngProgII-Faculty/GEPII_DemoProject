@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+
 using UnityEngine.UIElements;
 
 public class LoadingUIController : MonoBehaviour
@@ -14,10 +14,10 @@ public class LoadingUIController : MonoBehaviour
     ProgressBar progressBar;
     Label assetLabel;
     Image loadingSpinner;
-    VisualElement fadePanel;
+
 
     [Header("Fade Settings")]
-    [SerializeField] private float fadeDuration = 0.3f;
+    [SerializeField] private float fadeDuration = 2.0f;
 
     private float spinnerRotation;
 
@@ -63,15 +63,8 @@ public class LoadingUIController : MonoBehaviour
         loadingSpinner ??= loadingUIDoc.rootVisualElement.Q<Image>("LoadingSpinner");
         if (loadingSpinner == null) Debug.LogError("loadingSpinner not found in LoadingUI Doc");
 
-        // Set fade panel ( "??=" if not already set)
-        fadePanel ??= loadingUIDoc.rootVisualElement.Q<VisualElement>("FadePanel");
-        if (fadePanel == null) Debug.LogError("FadePanel not found in LoadingUI Doc");
-
-        // Initialize fade panel to fully transparent (content visible)
-        if (fadePanel != null)
-        {
-            fadePanel.style.opacity = 0f;
-        }
+        // Initialize the progress bar
+        UpdateProgressBar(0f, "Loading...");
 
         #endregion
     }
@@ -91,49 +84,12 @@ public class LoadingUIController : MonoBehaviour
     {
         if (loadingSpinner == null)
             return;
-
-        spinnerRotation -= 200f * Time.unscaledDeltaTime;
+        ;
+        spinnerRotation -= 200f * Time.deltaTime;
 
         loadingSpinner.style.rotate = new Rotate(new Angle(spinnerRotation, AngleUnit.Degree));
     }
 
-    /// <summary>
-    /// Fades to black (hides current UI content)
-    /// </summary>
-    public IEnumerator FadeToBlack()
-    {
-        if (fadePanel == null) yield break;
 
-        // FADE TO BLACK: Transparent (0) -> Opaque (1)
-        float elapsed = 0f;
-        while (elapsed < fadeDuration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(elapsed / fadeDuration);
-            fadePanel.style.opacity = Mathf.Lerp(0f, 1f, t);
-            yield return null;
-        }
-
-        fadePanel.style.opacity = 1f; // Ensure fully opaque
-    }
-
-    /// <summary>
-    /// Fades from black to reveal content
-    /// </summary>
-    public IEnumerator FadeFromBlack()
-    {
-        if (fadePanel == null) yield break;
-
-        // FADE FROM BLACK: Opaque (1) -> Transparent (0)
-        float elapsed = 0f;
-        while (elapsed < fadeDuration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = Mathf.Clamp01(elapsed / fadeDuration);
-            fadePanel.style.opacity = Mathf.Lerp(1f, 0f, t);
-            yield return null;
-        }
-
-        fadePanel.style.opacity = 0f; // Ensure fully transparent
-    }
 }
+

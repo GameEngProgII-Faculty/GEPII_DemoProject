@@ -19,8 +19,10 @@ public class GameStateManager : MonoBehaviour
 
     private void Start()
     {
-        currentState = gameState_BootLoad; // Set initial state to BootLoad
-        currentActiveState = currentState.ToString(); // Update debug info in inspector
+        Debug.Log($"GameStateManager.Start() called! StackTrace: {System.Environment.StackTrace}");
+        
+        currentState = gameState_BootLoad;
+        currentActiveState = currentState.ToString();
         currentState.EnterState();
     }
 

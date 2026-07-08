@@ -1,5 +1,7 @@
+using System.Collections;
+using UnityEditor.Rendering.LookDev;
 using UnityEngine;
-using UnityEngine.UIElements;   
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,6 +14,12 @@ public class UIManager : MonoBehaviour
     // public accessor for loading screen Controller
     public LoadingUIController LoadingUIController;
 
+    [Header("Fade Settings")]
+    //[SerializeField] private float fadeDuration = 1.5f;
+
+    // Global fade UI (created at runtime)
+    private UIDocument globalFadeUI;
+    private VisualElement globalFadePanel;
 
     private void Awake()
     {
@@ -22,17 +30,18 @@ public class UIManager : MonoBehaviour
 
         LoadingUIController = loadingScreenUI.GetComponent<LoadingUIController>();
 
-        // Activate Parent GameObject of all UI Screens (Some are disbaled for visibity in the editor Game view)
+        // Activate Parent GameObject of all UI Screens
         if (mainMenuUI != null) mainMenuUI.gameObject.SetActive(true);
         if (gameplayUI != null) gameplayUI.gameObject.SetActive(true);
         if (pauseUI != null) pauseUI.gameObject.SetActive(true);
         if (loadingScreenUI != null) loadingScreenUI.gameObject.SetActive(true);
 
+        // Create global fade UI at runtime
+        CreateGlobalFadeUI();
+
         HideAllUIMenus();
     }
 
-
-    
     public void ShowMainMenu()
     {
         // Debug.Log("UIManager: ShowMainMenu called.");
@@ -72,8 +81,6 @@ public class UIManager : MonoBehaviour
         loadingScreenUI.rootVisualElement.style.display = DisplayStyle.None;
     }
 
-
-
     private UIDocument FindUIDocument(string name)
     {
         var documents = Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -89,9 +96,133 @@ public class UIManager : MonoBehaviour
         return null;
     }
 
+    #region Global Fade Panel
+
+    private void CreateGlobalFadeUI()
+    {
+        // Create a new GameObject as a child of UIManager
+        GameObject fadeUIObject = new GameObject("GlobalFadeUI");
+        fadeUIObject.transform.SetParent(transform);
+
+        // Add UIDocument component
+        globalFadeUI = fadeUIObject.AddComponent<UIDocument>();
+
+        // Get the PanelSettings from one of the existing UI documents
+        if (mainMenuUI != null && mainMenuUI.panelSettings != null)
+        {
+            globalFadeUI.panelSettings = mainMenuUI.panelSettings;
+        }
+        else
+        {
+            Debug.LogError("Cannot set PanelSettings for GlobalFadeUI - mainMenuUI or its panelSettings is null!");
+            return;
+        }
+
+        // Set sort order to render on top of everything
+        globalFadeUI.sortingOrder = 9999;
+
+        // Create the fade panel visual element
+        globalFadePanel = new VisualElement();
+        globalFadePanel.name = "GlobalFadePanel";
+
+        // Style it to cover the entire screen
+        globalFadePanel.style.position = Position.Absolute;
+        globalFadePanel.style.left = 0;
+        globalFadePanel.style.top = 0;
+        globalFadePanel.style.right = 0;
+        globalFadePanel.style.bottom = 0;
+        globalFadePanel.style.width = Length.Percent(100);
+        globalFadePanel.style.height = Length.Percent(100);
+        globalFadePanel.style.backgroundColor = new Color(0, 0, 0, 1); // Black
+        globalFadePanel.style.opacity = 0f; // Start transparent
+        
+        // IMPORTANT: Disable picking (pointer events) so it doesn't block input when transparent
+        globalFadePanel.pickingMode = PickingMode.Ignore;
+
+        // Add the fade panel to the UIDocument's root
+        globalFadeUI.rootVisualElement.Add(globalFadePanel);
+
+        //Debug.Log("Global fade UI and panel created successfully!");
+    }
 
 
 
+    // Gradual Fade TO black (hides all UI content)
+    public IEnumerator FadeToBlack(float duration)
+    {
+        if (globalFadePanel == null)
+        {
+            Debug.LogError("Global fade panel is null!");
+            yield break;
+        }
+
+        // Enable picking so it blocks input during fade
+        globalFadePanel.pickingMode = PickingMode.Position;
+
+        //Debug.Log($"Starting FadeToBlack - Duration: {duration}s");
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float opacity = Mathf.Lerp(0f, 1f, t);
+            
+            globalFadePanel.style.opacity = opacity;
+            
+            yield return null;
+        }
+
+        globalFadePanel.style.opacity = 1f;
+        //Debug.Log("FadeToBlack complete!");
+    }
+     
+    // Gradual Fade FROM black to reveal content
+    public IEnumerator FadeFromBlack(float duration)
+    {
+        if (globalFadePanel == null)
+        {
+            Debug.LogError("Global fade panel is null!");
+            yield break;
+        }
+
+        // Debug.Log($"Starting FadeFromBlack - Duration: {duration}s");
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float opacity = Mathf.Lerp(1f, 0f, t);
+            
+            globalFadePanel.style.opacity = opacity;
+            
+            yield return null;
+        }
+
+        globalFadePanel.style.opacity = 0f;
+        
+        // Disable picking so it doesn't block input when invisible
+        globalFadePanel.pickingMode = PickingMode.Ignore;
+        
+        //Debug.Log("FadeFromBlack complete!");
+    }
+
+    public IEnumerator InstantBlackout()
+    {
+        Debug.Log("Instant blackout called");
+
+        yield return globalFadePanel.style.opacity = 1f;
+        yield return null;
+        yield return null;
+        yield return null;
+        yield return null;
+
+        yield return null;
+        Debug.Log("opacity: " + globalFadePanel.style.opacity);
+    }
+
+    #endregion
 
 
 }

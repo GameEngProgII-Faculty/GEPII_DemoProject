@@ -78,11 +78,14 @@ public class BootLoader : MonoBehaviour
     private void Start()
     {
         // This check distinguishes between two situations:
+
         // 1) BootLoader was loaded ADDITIVELY alongside some other scene (e.g. you pressed Play
         //    directly on a gameplay/test scene) — in that case, GetActiveScene() will be that
         //    OTHER scene, not "BootLoader", so this condition is false and we do nothing.
+
         // 2) You pressed Play directly on the BootLoader scene itself — in that case,
         //    GetActiveScene() IS "BootLoader", so we know we need to move on to Main Menu.
+
         if (SceneManager.GetActiveScene().name == PerformBootload.sceneName)
         {
             // Route through LevelManager (not a direct SceneManager.LoadScene call) so that
@@ -94,7 +97,9 @@ public class BootLoader : MonoBehaviour
             // and is initialized by the time this Start() runs. If GameManager isn't ready yet,
             // this line will throw a NullReferenceException — double check initialization/execution
             // order before relying on this.
-            GameManager.Instance.LevelManager.LoadMainMenu();
+            
+            // GameManager.Instance.LevelManager.LoadMainMenu();
+
         }
     }
 

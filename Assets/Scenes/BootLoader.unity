@@ -131,6 +131,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 2437451476669404409, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: fadeDuration
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2437451476669404409, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: m_EditorClassIdentifier
+      value: Assembly-CSharp::LoadingUIController
+      objectReference: {fileID: 0}
     - target: {fileID: 3032811726953435049, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
       propertyPath: pauseUI
       value: 
@@ -144,6 +152,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1995201037}
     - target: {fileID: 3032811726953435049, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: fadeDuration
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3032811726953435049, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
       propertyPath: loadingScreenUI
       value: 
       objectReference: {fileID: 1931753403}
@@ -151,6 +163,26 @@ PrefabInstance:
       propertyPath: LoadingUIController
       value: 
       objectReference: {fileID: 1931753402}
+    - target: {fileID: 7869898150081076470, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: minimumLoadTime
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7869898150081076470, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: fakeLoadStepDelay
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 7869898150081076470, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: minSimulatedDuration
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7869898150081076470, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: holdAt100PercentDelay
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7869898150081076470, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
+      propertyPath: m_EditorClassIdentifier
+      value: Assembly-CSharp::LevelManager
+      objectReference: {fileID: 0}
     - target: {fileID: 9021479220039721075, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -261,7 +293,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 761a8585ef78ca84097e78888fa2b5f4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoadingUIController
 --- !u!114 &1931753403 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8153276016348739461, guid: 249dc4cbb48cc9141bed84c504a054df, type: 3}

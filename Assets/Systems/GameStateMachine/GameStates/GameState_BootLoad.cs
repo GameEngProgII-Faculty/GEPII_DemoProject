@@ -28,24 +28,28 @@ public class GameState_BootLoad : IState
 
     public void EnterState()
     {
-        // Hide cursor and lock it to the center of the screen
+        System.Diagnostics.StackTrace stackTrace = new System.Diagnostics.StackTrace(true);
+        Debug.Log($"GameState_BootLoad.EnterState() called! Full StackTrace:\n{stackTrace}");
+        
         Cursor.visible = false;
-
-        // Set timescale to 0f;
         Time.timeScale = 0f;
 
-        // Detect Current Scene Type and set GameState accordingly
+        // Log the scene check
+        int sceneCount = SceneManager.sceneCount;
+        string sceneName = SceneManager.GetActiveScene().name;
+        Debug.Log($"Scene check: sceneCount={sceneCount}, sceneName={sceneName}");
 
         // if BootLoader is the only active scene, redirect to MainMenu
-        if (SceneManager.sceneCount == 1 && SceneManager.GetActiveScene().name == "BootLoader")
+        if (sceneCount == 1 && sceneName == "BootLoader")
         {
-            // Debug.Log("BootLoader is the only active scene. Loading MainMenu...");
+            Debug.Log("BootLoader is the only active scene. Loading MainMenu...");
             GameManager.Instance.LevelManager.LoadMainMenu();
+            Debug.Log("LoadMainMenu() has been called, now returning from EnterState.");
             return;
         }
 
         // if the Bootloader is Initialized while in the MainMenu Scene
-        else if (SceneManager.sceneCount > 1 && SceneManager.GetActiveScene().name == "MainMenu")
+        else if (sceneCount > 1 && sceneName == "MainMenu")
         {
             Debug.Log("BootLoader initialized in MainMenu Scene, Switching to GameState_MainMenu");
             gameManager.GameStateManager.SwitchToState(GameState_MainMenu.Instance);
@@ -53,7 +57,7 @@ public class GameState_BootLoad : IState
         }
 
         // if all the above fails the assumption is that we are in a Gameplay Scene
-        else if (SceneManager.sceneCount > 1)
+        else if (sceneCount > 1)
         {
             Debug.Log("BootLoader initialized in Gameplay Scene, Switching to GameState_Gameplay");
             gameManager.GameStateManager.SwitchToState(GameState_Gameplay.Instance);
@@ -64,6 +68,7 @@ public class GameState_BootLoad : IState
             Debug.LogError("BootLoader could not determine the current scene type. Please check scene setup.");
         }
 
+        Debug.Log("GameState_BootLoad.EnterState() completed!");
     }
 
     public void FixedUpdateState()
