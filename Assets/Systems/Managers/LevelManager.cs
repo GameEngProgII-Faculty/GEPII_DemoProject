@@ -24,14 +24,14 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private bool simulateLoading = false;
     [SerializeField] private float minimumLoadTime = 0.01f;
     [SerializeField] private float fakeLoadStepDelay = 0.02f;
-    [SerializeField] private float holdAt100PercentDelay = 2.0f;
+    [SerializeField] private float holdAt100PercentDelay = 0.5f;
 
     [SerializeField] private float burstStrength = 2.5f;
     [SerializeField] private float stallChance = 0.15f;
     [SerializeField] private float stallDuration = 0.25f;
 
-    private float quickFadeDuration = 0.25f;
-    private float standardFadeDuration = 3.0f;
+    private float quickFadeDuration = 0.2f;
+    private float standardFadeDuration = 1.0f;
 
     // Loads a scene - routes to either sync or async loading based on settings
     public void LoadScene(int sceneId)
@@ -56,8 +56,6 @@ public class LevelManager : MonoBehaviour
     // Quick scene load with fades but no loading screen
     IEnumerator QuickLoadScene(int sceneId)
     {
-        Debug.Log("Quick Load Scene");
-
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         // Fade to black
@@ -87,7 +85,7 @@ public class LevelManager : MonoBehaviour
         }
 
         // Fade from black to reveal new scene
-        yield return StartCoroutine(uIManager.FadeFromBlack(standardFadeDuration));
+        yield return StartCoroutine(uIManager.FadeFromBlack(quickFadeDuration));
     }
 
     // Loads the next scene in Build Settings order
