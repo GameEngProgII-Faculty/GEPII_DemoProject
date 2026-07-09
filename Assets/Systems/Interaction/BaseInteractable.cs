@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -15,7 +14,7 @@ public abstract class BaseInteractable : MonoBehaviour, IInteractable
 
 
 
-    public virtual void Awake()
+    protected virtual void Awake()
     {
         if(gameObject.layer != LayerMask.NameToLayer("Interactable"))
         {

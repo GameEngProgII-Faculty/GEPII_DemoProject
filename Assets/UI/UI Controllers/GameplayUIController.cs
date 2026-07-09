@@ -14,28 +14,21 @@ public class GameplayUIController : MonoBehaviour
 
     private void Awake()
     {
-        #region Set Manager References
-
-        // Set Managers References ( "??=" if not already set)
-        gameManager ??= GameManager.Instance;
-        uIManager ??= GameManager.Instance.UIManager;
-        levelManager ??= GameManager.Instance.LevelManager;
-        inputManager ??= GameManager.Instance.InputManager;
-        gameStateManager ??= GameManager.Instance.GameStateManager;
-
-        //check manager references for null
-        if (gameManager == null) Debug.LogError("GameManager reference is null!");
-        if (uIManager == null) Debug.LogError("UIManager reference is null!");
-        if (levelManager == null) Debug.LogError("LevelManager reference is null!");
-        if (inputManager == null) Debug.LogError("InputManager reference is null!");
-        if (gameStateManager == null) Debug.LogError("GameStateManager reference is null!");
-
-        #endregion
+        
     }
 
-    // Start() is the reccomended init method for setting UItoolkit references
-    private void Start()
+    public void Initialize()
     {
+        gameStateManager = GameStateManager.Instance;
+        inputManager = InputManager.Instance;
+        levelManager = LevelManager.Instance;
+        uIManager = UIManager.Instance;
+
+        if (gameStateManager == null) Debug.LogError("GameStateManager reference is null!");
+        if (inputManager == null) Debug.LogError("InputManager reference is null!");
+        if (levelManager == null) Debug.LogError("LevelManager reference is null!");
+        if (uIManager == null) Debug.LogError("UIManager reference is null!");
+
         #region Set UI References
 
         // Set UI Document Reference ( "??=" if not already set)
@@ -44,6 +37,8 @@ public class GameplayUIController : MonoBehaviour
 
         #endregion
     }
+
+
 
 
 

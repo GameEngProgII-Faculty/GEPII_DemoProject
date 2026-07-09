@@ -2,10 +2,6 @@ using UnityEngine;
 
 public class PlayerSpawnpoint : MonoBehaviour
 {
-    GameManager gameManager => GameManager.Instance;
-    GameStateManager gameStateManager => GameManager.Instance.GameStateManager;
-    PlayerController playerController => GameManager.Instance.PlayerController;
-    UIManager uIManager => GameManager.Instance.UIManager;
 
 
 

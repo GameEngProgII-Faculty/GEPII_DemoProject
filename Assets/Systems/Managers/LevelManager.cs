@@ -1,20 +1,28 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Handles loading scenes/levels and keeping GameStateManager in sync with whatever scene is active.
 // Also drives the loading screen progress bar during async loads.
-public class LevelManager : MonoBehaviour
+public class LevelManager : MonoBehaviour, IManager
 {
+    // Static singleton instance
+    public static LevelManager Instance { get; private set; }
+
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
+
     // Temp storage used by LoadNextLevel() to calculate which build index to load next.
     private int nextScene;
 
-    // Cached shortcut references to other managers via the GameManager singleton.
-    GameManager gameManager => GameManager.Instance;
-    GameStateManager gameStateManager => GameManager.Instance.GameStateManager;
-    PlayerController playerController => GameManager.Instance.PlayerController;
-    UIManager uIManager => GameManager.Instance.UIManager;
-    LoadingUIController loadingUIController => GameManager.Instance.UIManager.LoadingUIController;
+    // Cached shortcut references to other managers.
+    GameStateManager gameStateManager => GameStateManager.Instance;
+    PlayerController playerController => PlayerController.Instance;
+    UIManager uIManager => UIManager.Instance;
+
+    LoadingUIController loadingUIController => UIManager.Instance.loadingUIController;
 
     // Named constants for build indices
     public const int BOOTLOADER_SCENE = 0;
@@ -24,14 +32,73 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private bool simulateLoading = false;
     [SerializeField] private float minimumLoadTime = 0.01f;
     [SerializeField] private float fakeLoadStepDelay = 0.02f;
-    [SerializeField] private float holdAt100PercentDelay = 0.5f;
+    private float holdAt100PercentDelay = 0.25f;
 
     [SerializeField] private float burstStrength = 2.5f;
     [SerializeField] private float stallChance = 0.15f;
-    [SerializeField] private float stallDuration = 0.25f;
+    [SerializeField] private float stallDuration = 0.1f;
 
-    private float quickFadeDuration = 0.2f;
+    private float quickFadeDuration = 1.0f;
     private float standardFadeDuration = 1.0f;
+
+    public GameObject testReference;
+
+    private void Awake()
+    {
+        #region Singleton
+        // Singleton pattern to ensure only one instance of LevelManager exists
+
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
+
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
+    }
+
+    public async Task<bool> InitializeAsync()
+    {
+        /// What BELONGS in InitializeAsync():
+        /// + Reference assignment
+        /// + Validation of references
+        /// + Anything that used to be in Awake() but must run after BootLoader loads
+        /// 
+        /// What does NOT BELONG in InitializeAsync():
+        /// - Entering gameplay states
+        /// - Running state machine transitions
+        /// - Calling EnterState()
+        /// - Anything that depends on the target scene being loaded
+
+        await Task.Yield();
+
+        try
+        {
+            // Assign references
+            // Validate dependencies
+            // Initialize subsystems
+            // Enable input maps
+            // Load config
+            // Warm up resources
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+            return false;
+        }
+
+        // everything checks out, return true to indicate successful initialization
+        return true;
+    }
+
+
 
     // Loads a scene - routes to either sync or async loading based on settings
     public void LoadScene(int sceneId)
@@ -224,7 +291,7 @@ public class LevelManager : MonoBehaviour
             float t = Mathf.Clamp01(elapsed / duration);
             float noise = Mathf.PerlinNoise(Time.time * burstStrength, 0f);
 
-            if (Random.value < stallChance)
+            if (UnityEngine.Random.value < stallChance)
             {
                 yield return new WaitForSecondsRealtime(stallDuration);
             }
@@ -255,7 +322,7 @@ public class LevelManager : MonoBehaviour
             "Animation Clips",
             "Shaders"
         };
-        return assetNames[Random.Range(0, assetNames.Length)];
+        return assetNames[UnityEngine.Random.Range(0, assetNames.Length)];
     }
 
     #endregion

@@ -1,13 +1,11 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+
 
 public class GameState_Loading : IState
 {
-    GameManager gameManager => GameManager.Instance;
-    GameStateManager gameStateManager => GameManager.Instance.GameStateManager;
-    PlayerController playerController => GameManager.Instance.PlayerController;
-    UIManager uIManager => GameManager.Instance.UIManager;
+    GameStateManager gameStateManager => GameStateManager.Instance;
+    PlayerController playerController => PlayerController.Instance;
+    UIManager uIManager => UIManager.Instance;
 
 
 

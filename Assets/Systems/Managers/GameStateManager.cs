@@ -1,7 +1,16 @@
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
-public class GameStateManager : MonoBehaviour
+
+public class GameStateManager : MonoBehaviour, IManager
 {
+    // Singleton instance of GameManager for global access
+    public static GameStateManager Instance { get; private set; }
+
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
+
     [Header("Debug (read only)")]
     [SerializeField] private string currentActiveState;
     [SerializeField] private string lastActiveState;
@@ -17,8 +26,65 @@ public class GameStateManager : MonoBehaviour
     public GameState_BootLoad gameState_BootLoad = GameState_BootLoad.Instance;
     public GameState_Loading gameState_Loading = GameState_Loading.Instance;
 
+    public void Awake()
+    {
+        #region Singleton
+        // Singleton pattern to ensure only one instance of GameManager exists
+
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
+
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
+    }
+
+    public async Task<bool> InitializeAsync()
+    {
+        /// What BELONGS in InitializeAsync():
+        /// + Reference assignment
+        /// + Validation of references
+        /// + Anything that used to be in Awake() but must run after BootLoader loads
+        /// 
+        /// What does NOT BELONG in InitializeAsync():
+        /// - Entering gameplay states
+        /// - Running state machine transitions
+        /// - Calling EnterState()
+        /// - Anything that depends on the target scene being loaded
+
+        await Task.Yield();
+
+        try
+        {
+            // Assign references
+            // Validate dependencies
+            // Initialize subsystems
+            // Enable input maps
+            // Load config
+            // Warm up resources
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+            return false;
+        }
+
+        // everything checks out, return true to indicate successful initialization
+        return true;
+    }
+
+
+
     private void Start()
-    {        
+    {
         currentState = gameState_BootLoad;
         currentActiveState = currentState.ToString();
         currentState.EnterState();
@@ -108,6 +174,8 @@ public class GameStateManager : MonoBehaviour
         Application.Quit();
 
     }
+
+
 
 
 

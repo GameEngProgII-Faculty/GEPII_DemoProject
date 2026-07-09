@@ -13,8 +13,7 @@ using UnityEngine;
 
 public class GameState_BootLoad : IState
 {
-    GameManager gameManager => GameManager.Instance;
-    GameStateManager gameStateManager => GameManager.Instance.GameStateManager;
+    GameStateManager gameStateManager => GameStateManager.Instance;
 
     #region Singleton Instance
     private static readonly GameState_BootLoad instance = new GameState_BootLoad();

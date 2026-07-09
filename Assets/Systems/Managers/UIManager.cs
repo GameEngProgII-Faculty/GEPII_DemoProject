@@ -1,21 +1,29 @@
+using System;
 using System.Collections;
-using UnityEditor.Rendering.LookDev;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-public class UIManager : MonoBehaviour
+public class UIManager : MonoBehaviour, IManager
 {
+    // Static singleton instance
+    public static UIManager Instance { get; private set; }
+
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
+
     [Header("UI Menu Objects")]
     [SerializeField] private UIDocument mainMenuUI;
     [SerializeField] private UIDocument gameplayUI;
     [SerializeField] private UIDocument pauseUI;
     [SerializeField] private UIDocument loadingScreenUI;
 
-    // public accessor for loading screen Controller
-    public LoadingUIController LoadingUIController;
-
-    [Header("Fade Settings")]
-    //[SerializeField] private float fadeDuration = 1.5f;
+  
+    public LoadingUIController loadingUIController;
+    private MainMenuUIController mainMenuUIController;
+    private GameplayUIController gameplayUIController;
+    private PauseUIController pauseUIController;
 
     // Global fade UI (created at runtime)
     private UIDocument globalFadeUI;
@@ -23,13 +31,70 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        mainMenuUI = FindUIDocument("MainMenuUI");
-        gameplayUI = FindUIDocument("GameplayUI");
-        pauseUI = FindUIDocument("PauseUI");
-        loadingScreenUI = FindUIDocument("LoadingScreenUI");
+        #region Singleton
+        // Singleton pattern to ensure only one instance of GameManager exists
 
-        LoadingUIController = loadingScreenUI.GetComponent<LoadingUIController>();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
 
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
+    }
+
+    public async Task<bool> InitializeAsync()
+    {
+        /// What BELONGS in InitializeAsync():
+        /// + Reference assignment
+        /// + Validation of references
+        /// + Anything that used to be in Awake() but must run after BootLoader loads
+        /// 
+        /// What does NOT BELONG in InitializeAsync():
+        /// - Entering gameplay states
+        /// - Running state machine transitions
+        /// - Calling EnterState()
+        /// - Anything that depends on the target scene being loaded
+
+        await Task.Yield();
+
+        try
+        {
+            mainMenuUI = transform.Find("MainMenuUI")?.GetComponent<UIDocument>();
+            gameplayUI = transform.Find("GameplayUI")?.GetComponent<UIDocument>();
+            pauseUI = transform.Find("PauseUI")?.GetComponent<UIDocument>();
+            loadingScreenUI = transform.Find("LoadingScreenUI")?.GetComponent<UIDocument>();
+
+            loadingUIController = loadingScreenUI.GetComponent<LoadingUIController>();
+            mainMenuUIController = mainMenuUI.GetComponent<MainMenuUIController>();
+            gameplayUIController = gameplayUI.GetComponent<GameplayUIController>();
+            pauseUIController = pauseUI.GetComponent<PauseUIController>();
+
+            loadingUIController.Initialize();
+            mainMenuUIController.Initialize();
+            gameplayUIController.Initialize();
+            pauseUIController.Initialize();
+
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+            return false;
+        }
+
+        // everything checks out, return true to indicate successful initialization
+        return true;
+    }
+
+    private void Start()
+    {
         // Activate Parent GameObject of all UI Screens
         if (mainMenuUI != null) mainMenuUI.gameObject.SetActive(true);
         if (gameplayUI != null) gameplayUI.gameObject.SetActive(true);
@@ -39,7 +104,12 @@ public class UIManager : MonoBehaviour
         // Create global fade UI at runtime
         CreateGlobalFadeUI();
 
-        HideAllUIMenus();
+        // Only hide menus if we are in BootLoader scene
+        if (SceneManager.GetActiveScene().name == "BootLoader")
+        {
+            HideAllUIMenus();
+        }
+
     }
 
     public void ShowMainMenu()
@@ -83,7 +153,7 @@ public class UIManager : MonoBehaviour
 
     private UIDocument FindUIDocument(string name)
     {
-        var documents = Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        var documents = UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         foreach (var doc in documents)
         {
@@ -159,8 +229,6 @@ public class UIManager : MonoBehaviour
         // Enable picking so it blocks input during fade
         globalFadePanel.pickingMode = PickingMode.Position;
 
-        //Debug.Log($"Starting FadeToBlack - Duration: {duration}s");
-
         float elapsed = 0f;
         while (elapsed < duration)
         {
@@ -174,7 +242,6 @@ public class UIManager : MonoBehaviour
         }
 
         globalFadePanel.style.opacity = 1f;
-        //Debug.Log("FadeToBlack complete!");
     }
      
     // Gradual Fade FROM black to reveal content
@@ -185,8 +252,6 @@ public class UIManager : MonoBehaviour
             Debug.LogError("Global fade panel is null!");
             yield break;
         }
-
-        // Debug.Log($"Starting FadeFromBlack - Duration: {duration}s");
 
         float elapsed = 0f;
         while (elapsed < duration)
@@ -205,7 +270,6 @@ public class UIManager : MonoBehaviour
         // Disable picking so it doesn't block input when invisible
         globalFadePanel.pickingMode = PickingMode.Ignore;
         
-        //Debug.Log("FadeFromBlack complete!");
     }
 
     public IEnumerator InstantBlackout()

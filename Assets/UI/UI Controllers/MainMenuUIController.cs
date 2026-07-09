@@ -17,35 +17,31 @@ public class MainMenuUIController : MonoBehaviour
 
     Button[] menuButtons;
 
-    private void Awake()
+   
+
+    public void Initialize()
     {
         #region Set Manager References
 
         // Set Managers References ( "??=" if not already set)
-        gameManager ??= GameManager.Instance;
-        uIManager ??= GameManager.Instance.UIManager;
-        levelManager ??= GameManager.Instance.LevelManager;
-        inputManager ??= GameManager.Instance.InputManager;
-        gameStateManager ??= GameManager.Instance.GameStateManager;
+        uIManager ??= UIManager.Instance;
+        levelManager ??= LevelManager.Instance;
+        inputManager ??= InputManager.Instance;
+        gameStateManager ??= GameStateManager.Instance;
 
         //check manager references for null
-        if (gameManager == null) Debug.LogError("GameManager reference is null!");
         if (uIManager == null) Debug.LogError("UIManager reference is null!");
         if (levelManager == null) Debug.LogError("LevelManager reference is null!");
         if (inputManager == null) Debug.LogError("InputManager reference is null!");
         if (gameStateManager == null) Debug.LogError("GameStateManager reference is null!");
 
         #endregion
-    }
 
-    // Start() call is the reccomended init method for setting UItoolkit references
-    private void Start()
-    {
         #region Set UI References
 
         // Set UI Document Reference ( "??=" if not already set)
         mainMenuUIDoc ??= GetComponent<UIDocument>();
-        if(mainMenuUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
+        if (mainMenuUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
 
         // Set Button References ( "??=" if not already set)
         playButton = mainMenuUIDoc.rootVisualElement.Q<Button>("PlayButton");
@@ -53,9 +49,9 @@ public class MainMenuUIController : MonoBehaviour
         quitButton = mainMenuUIDoc.rootVisualElement.Q<Button>("QuitButton");
 
         // Check to make sure buttons are found
-        if(playButton == null) Debug.LogError("Play Button not found in MainMenu_UIDoc");
-        if(optionsButton == null) Debug.LogError("Options Button not found in MainMenu_UIDoc");
-        if(quitButton == null) Debug.LogError("Quit Button not found in MainMenu_UIDoc");
+        if (playButton == null) Debug.LogError("Play Button not found in MainMenu_UIDoc");
+        if (optionsButton == null) Debug.LogError("Options Button not found in MainMenu_UIDoc");
+        if (quitButton == null) Debug.LogError("Quit Button not found in MainMenu_UIDoc");
 
         #endregion
 
@@ -67,6 +63,9 @@ public class MainMenuUIController : MonoBehaviour
 
         #endregion
     }
+
+
+    
 
 
 

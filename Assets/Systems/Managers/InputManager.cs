@@ -1,26 +1,83 @@
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 
-public class InputManager : MonoBehaviour, Inputs.IPlayerActions
+public class InputManager : MonoBehaviour, Inputs.IPlayerActions, IManager
 {
+    // Static singleton instance
+    public static InputManager Instance { get; private set; }
+
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
 
     private Inputs inputs;
 
+    // Cached References
+    private PlayerController playerController => PlayerController.Instance;
+
+
     void Awake()
     {
-        // Initialize the Input System
+        #region Singleton
+        // Singleton pattern to ensure only one instance of GameManager exists
+
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
+
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
+
+  
+
+       
+    }
+
+    public async Task<bool> InitializeAsync()
+    {
+        await Task.Yield();
+
         try
         {
+            // If an old instance somehow exists, clean it up first
+            if (inputs != null)
+            {
+                inputs.Player.Disable();
+                inputs.Dispose();
+            }
+
             inputs = new Inputs();
-            inputs.Player.SetCallbacks(this); // Set the callbacks for the Player action map
-            inputs.Player.Enable(); // Enables the "Player" action map
+            inputs.Player.SetCallbacks(this);
+            inputs.Player.Enable();
+
+            playerController.InitializeInput();
         }
-        catch (Exception exception)
+        catch (Exception ex)
         {
-            Debug.LogError("Error initializing InputManager: " + exception.Message);
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+
+            // CRITICAL: Clean up if it failed AFTER inputs was created and enabled
+            if (inputs != null)
+            {
+                inputs.Player.Disable();
+                inputs.Dispose();
+                inputs = null;
+            }
+            return false;
         }
+
+        return true;
     }
+
 
     #region Input Events
 
@@ -94,6 +151,8 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
         if (inputs != null)
         {
             inputs.Player.Disable();
+            inputs.Dispose();
+            inputs = null;
         }
     }
 }

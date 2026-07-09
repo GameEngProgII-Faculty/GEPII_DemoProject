@@ -1,12 +1,20 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;  
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;  
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IManager
 {
-    // Manager References
-    private InputManager inputManager => GameManager.Instance.InputManager;
+    // Singleton instance of GameManager for global access
+    public static PlayerController Instance { get; private set; }
+
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
+
+
+    // Cached shortcut references
+    private InputManager inputManager => InputManager.Instance;
     private CharacterController characterController => GetComponent<CharacterController>();
 
     [SerializeField] private Transform cameraRoot;
@@ -106,32 +114,63 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 lookInput;
 
-    private void Awake()
+    public void Awake()
     {
-        #region Initialize Default values
-        currentMovementState = MovementState.Idle;
+        #region Singleton
+        // Singleton pattern to ensure only one instance of GameManager exists
 
-        // Initialize crouch variables
-        standingHeight = characterController.height;
-        standingCenter = characterController.center;
-        standingCamY = cameraRoot.localPosition.y;
-
-        targetHeight = standingHeight;
-        targetCenter = standingCenter;
-        targetCamY = cameraRoot.localPosition.y;
-
-        // set default state of bools
-        crouchInput = false;
-        sprintInput = false;
-
-
-        groundCheckRadius = characterController.radius + 0.05f;
-        playerLayerMask = ~LayerMask.GetMask("Player");
-
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
         #endregion
+
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
     }
 
 
+    public async Task<bool> InitializeAsync()
+    {
+        await Task.Yield();
+
+        try
+        {
+            // Initialize Default values
+            currentMovementState = MovementState.Idle;
+
+            // Initialize crouch variables
+            standingHeight = characterController.height;
+            standingCenter = characterController.center;
+            standingCamY = cameraRoot.localPosition.y;
+
+            targetHeight = standingHeight;
+            targetCenter = standingCenter;
+            targetCamY = cameraRoot.localPosition.y;
+
+            // set default state of bools
+            crouchInput = false;
+            sprintInput = false;
+
+            groundCheckRadius = characterController.radius + 0.05f;
+            playerLayerMask = ~LayerMask.GetMask("Player");
+
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+            return false;
+        }
+
+        // everything checks out, return true to indicate successful initialization
+        return true;
+    }
 
     public void HandlePlayerMovement()
     {
@@ -590,7 +629,7 @@ public class PlayerController : MonoBehaviour
 
 
 
-    void OnEnable()
+    public void InitializeInput()
     {
         inputManager.MoveInputEvent += SetMoveInput;
         inputManager.LookInputEvent += SetLookInput;
@@ -609,8 +648,6 @@ public class PlayerController : MonoBehaviour
         inputManager.JumpInputEvent -= HandleJumpInput;
         inputManager.CrouchInputEvent -= HandleCrouchInput;
         inputManager.SprintInputEvent -= HandleSprintInput;
-
-
     }
 
 }

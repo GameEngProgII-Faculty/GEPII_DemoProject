@@ -1,15 +1,17 @@
 using System;
-using Unity.VisualScripting;
+using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
-public class InteractionManager : MonoBehaviour
+public class InteractionManager : MonoBehaviour, IManager
 {
-    // Manager References
-    private InputManager inputManager => GameManager.Instance.InputManager;
+    // Singleton instance of GameManager for global access
+    public static InteractionManager Instance { get; private set; }
 
+    // Name property for IManager interface implementation
+    public string Name => GetType().Name;
 
-
+    // Cached References
+    private InputManager inputManager => InputManager.Instance;
 
     [Header("Interaction Settings")]
     private LayerMask interactableLayer;
@@ -18,7 +20,7 @@ public class InteractionManager : MonoBehaviour
 
     public string DebugCurrentInteractable;
 
- 
+    private bool initialized = false;
 
     [Header("Interaction Cooldown")]
     [Tooltip("Time in seconds before the player can interact again after a successful interaction. Prevents multiple nteractions on one press")]
@@ -31,20 +33,52 @@ public class InteractionManager : MonoBehaviour
 
     private Transform cameraRoot; // Reference to the player's camera root transform
 
-
-    private void Start()
+    public void Awake()
     {
-        // Set the interactable layer
-        interactableLayer = LayerMask.GetMask("Interactable");
+        #region Singleton
+        // Singleton pattern to ensure only one instance of GameManager exists
 
-        // Set the camera root from the player controller
-        cameraRoot = GameManager.Instance.PlayerController.CameraRoot;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        #endregion
 
+        // Register with Managers root
+        Managers.Instance.RegisterManager(this);
     }
 
+    public async Task<bool> InitializeAsync()
+    {
+        await Task.Yield();
+
+        try
+        {
+            interactableLayer = LayerMask.GetMask("Interactable");
+
+            cameraRoot = PlayerController.Instance.CameraRoot;
+            initialized = true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
+            return false;
+        }
+
+        return true;
+    }
 
     private void Update()
     {
+        if (!initialized)
+            return;
+
         HandleInteractionDetection();
     }
 

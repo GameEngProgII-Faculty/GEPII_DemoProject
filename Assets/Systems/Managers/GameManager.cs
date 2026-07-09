@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -49,10 +50,19 @@ public class GameManager : MonoBehaviour
         uIManager ??= GetComponentInChildren<UIManager>();
         levelManager ??= GetComponentInChildren<LevelManager>();
         interactionManager ??= GetComponentInChildren<InteractionManager>();
+
+     
     }
 
-  
 
+    private readonly List<IManager> managers = new();
+
+    public void RegisterSubsystem(IManager manager)
+    {
+        managers.Add(manager);
+    }
+
+    public IReadOnlyList<IManager> GetRegisteredSubsystems() => managers;
 
 
 

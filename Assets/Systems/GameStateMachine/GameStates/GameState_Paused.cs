@@ -3,10 +3,9 @@ using UnityEngine.InputSystem;
 
 public class GameState_Paused : IState
 {
-    GameManager gameManager => GameManager.Instance;
-    GameStateManager gameStateManager => GameManager.Instance.GameStateManager;
-    PlayerController playerController => GameManager.Instance.PlayerController;
-    UIManager uIManager => GameManager.Instance.UIManager;
+    GameStateManager gameStateManager => GameStateManager.Instance;
+    PlayerController playerController => PlayerController.Instance;
+    UIManager uIManager => UIManager.Instance;
 
     #region Singleton Instance
     // A single, readonly instance of the atate class is created.
