@@ -6,7 +6,7 @@ public class TriggerLevelChange : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameManager.Instance.LevelManager.LoadNextLevel();
+            LevelManager.Instance.LoadNextLevel();
         }
     }
 }

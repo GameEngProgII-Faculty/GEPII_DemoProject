@@ -1,21 +1,17 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;  
 
-public class PlayerController : MonoBehaviour, IManager
+public class PlayerController : MonoBehaviour
 {
     // Singleton instance of GameManager for global access
     public static PlayerController Instance { get; private set; }
 
-    // Name property for IManager interface implementation
-    public string Name => GetType().Name;
 
+    private CharacterController characterController;
 
     // Cached shortcut references
     private InputManager inputManager => InputManager.Instance;
-    private CharacterController characterController => GetComponent<CharacterController>();
 
     [SerializeField] private Transform cameraRoot;
     public Transform CameraRoot => cameraRoot;
@@ -114,75 +110,71 @@ public class PlayerController : MonoBehaviour, IManager
     private Vector2 moveInput;
     private Vector2 lookInput;
 
-    public void Awake()
+    private void Awake()
     {
-        #region Singleton
-        // Singleton pattern to ensure only one instance of GameManager exists
+        #region Singleton Pattern Setup
 
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        // Enforce a unique instance: if one already exists, self-destruct.
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
+
+        // Establish this instance as the global instance and persist across scene loads.
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         #endregion
 
-        // Register with Managers root
-        Managers.Instance.RegisterManager(this);
-    }
+        characterController = GetComponent<CharacterController>();
+}
 
-
-    public async Task<bool> InitializeAsync()
+    private void Start()
     {
-        await Task.Yield();
-
-        try
-        {
-            // Initialize Default values
-            currentMovementState = MovementState.Idle;
-
-            // Initialize crouch variables
-            standingHeight = characterController.height;
-            standingCenter = characterController.center;
-            standingCamY = cameraRoot.localPosition.y;
-
-            targetHeight = standingHeight;
-            targetCenter = standingCenter;
-            targetCamY = cameraRoot.localPosition.y;
-
-            // set default state of bools
-            crouchInput = false;
-            sprintInput = false;
-
-            groundCheckRadius = characterController.radius + 0.05f;
-            playerLayerMask = ~LayerMask.GetMask("Player");
-
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
-            return false;
-        }
-
-        // everything checks out, return true to indicate successful initialization
-        return true;
+        Initialize();
+        Debug.Log($"{GetType().Name}: Initialized");
     }
+
+    void Initialize()
+    {
+        // Initialize Default values
+        currentMovementState = MovementState.Idle;
+
+        // Initialize crouch variables
+        standingHeight = characterController.height;
+        standingCenter = characterController.center;
+        standingCamY = cameraRoot.localPosition.y;
+
+        targetHeight = standingHeight;
+        targetCenter = standingCenter;
+        targetCamY = cameraRoot.localPosition.y;
+
+        // set default state of bools
+        crouchInput = false;
+        sprintInput = false;
+
+        groundCheckRadius = characterController.radius + 0.05f;
+        playerLayerMask = ~LayerMask.GetMask("Player");
+
+        InitializeInput();
+    }
+
+
+
 
     public void HandlePlayerMovement()
     {
-        characterVelocity = characterController.velocity.magnitude;
+        Debug.Log($"HandlePlayerMovement: MoveX = {moveInput.x} ,MoveY = {moveInput.y}");
 
+        characterVelocity = characterController.velocity.magnitude;
         if (moveEnabled == false) return; // Check if movement is enabled
 
+        // Perform Ground Check
+        GroundedCheck();
+        
         // DetermineMovementState
         DetermineMovementState();
-
-        // perform Ground Check
-        GroundedCheck();
 
         // Handle Crouch Transition
         HandleCrouchTransition();
@@ -611,10 +603,6 @@ public class PlayerController : MonoBehaviour, IManager
         Transform targetSpawnpoint = spawnpoint.transform;
 
 
-
-    
-
-
         // Perform the actual move
         characterController.enabled = false;
         transform.position = targetSpawnpoint.position;
@@ -623,6 +611,8 @@ public class PlayerController : MonoBehaviour, IManager
 
         velocity = Vector3.zero;
         cameraRoot.localEulerAngles = Vector3.zero;
+
+
 
         if (debugLogsEnabled) Debug.Log($"Player repositioned to spawn point at {targetSpawnpoint.position}");
     }

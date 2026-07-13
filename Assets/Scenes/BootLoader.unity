@@ -232,7 +232,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
---- !u!1 &682778136
+--- !u!1 &1277415794
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -240,38 +240,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 682778138}
-  - component: {fileID: 682778137}
+  - component: {fileID: 1277415796}
+  - component: {fileID: 1277415795}
   m_Layer: 0
-  m_Name: Manager Handler
+  m_Name: BootLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &682778137
+--- !u!114 &1277415795
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 682778136}
+  m_GameObject: {fileID: 1277415794}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c4085ecf370e3846ba529df97fa22ff, type: 3}
+  m_Script: {fileID: 11500000, guid: bf861b6cf49caf64f8f633f805ad4993, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Managers
-  registeredManagersDebug: []
---- !u!4 &682778138
+  m_EditorClassIdentifier: Assembly-CSharp::BootLoader
+--- !u!4 &1277415796
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 682778136}
+  m_GameObject: {fileID: 1277415794}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.32872, y: -0, z: 1.19288}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1169,17 +1168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   simulateLoading: 1
-  minimumLoadTime: 0.01
-  fakeLoadStepDelay: 0.02
-  burstStrength: 2.5
-  stallChance: 0.15
-  stallDuration: 0.25
   testReference: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 682778138}
   - {fileID: 6059440568385020006}
   - {fileID: 1596384518134311256}
   - {fileID: 2864395315997403765}
@@ -1187,3 +1180,4 @@ SceneRoots:
   - {fileID: 5945027034222719238}
   - {fileID: 2244172626473948663}
   - {fileID: 113027769}
+  - {fileID: 1277415796}

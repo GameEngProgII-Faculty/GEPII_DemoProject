@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Handles loading scenes/levels and keeping GameStateManager in sync with whatever scene is active.
 // Also drives the loading screen progress bar during async loads.
-public class LevelManager : MonoBehaviour, IManager
+public class LevelManager : MonoBehaviour
 {
     // Static singleton instance
     public static LevelManager Instance { get; private set; }
-
-    // Name property for IManager interface implementation
-    public string Name => GetType().Name;
 
     // Temp storage used by LoadNextLevel() to calculate which build index to load next.
     private int nextScene;
@@ -29,77 +24,37 @@ public class LevelManager : MonoBehaviour, IManager
     public const int MAIN_MENU_SCENE = 1;
 
     [Header("Loading Simulation Settings")]
-    [SerializeField] private bool simulateLoading = false;
-    [SerializeField] private float minimumLoadTime = 0.01f;
-    [SerializeField] private float fakeLoadStepDelay = 0.02f;
+    [SerializeField] private bool simulateLoading = true;
+    private float currentProgress = 0f;
     private float holdAt100PercentDelay = 0.25f;
 
-    [SerializeField] private float burstStrength = 2.5f;
-    [SerializeField] private float stallChance = 0.15f;
-    [SerializeField] private float stallDuration = 0.1f;
 
-    private float quickFadeDuration = 1.0f;
+
+    private float quickFadeDuration = 0.3f;
     private float standardFadeDuration = 1.0f;
 
     public GameObject testReference;
 
     private void Awake()
     {
-        #region Singleton
-        // Singleton pattern to ensure only one instance of LevelManager exists
+        #region Singleton Pattern Setup
 
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        // Enforce a unique instance: if one already exists, self-destruct.
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
+
+        // Establish this instance as the global instance and persist across scene loads.
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         #endregion
 
-        // Register with Managers root
-        Managers.Instance.RegisterManager(this);
+        Debug.Log($"{GetType().Name}: Initialized");
     }
-
-    public async Task<bool> InitializeAsync()
-    {
-        /// What BELONGS in InitializeAsync():
-        /// + Reference assignment
-        /// + Validation of references
-        /// + Anything that used to be in Awake() but must run after BootLoader loads
-        /// 
-        /// What does NOT BELONG in InitializeAsync():
-        /// - Entering gameplay states
-        /// - Running state machine transitions
-        /// - Calling EnterState()
-        /// - Anything that depends on the target scene being loaded
-
-        await Task.Yield();
-
-        try
-        {
-            // Assign references
-            // Validate dependencies
-            // Initialize subsystems
-            // Enable input maps
-            // Load config
-            // Warm up resources
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
-            return false;
-        }
-
-        // everything checks out, return true to indicate successful initialization
-        return true;
-    }
-
-
-
+    
     // Loads a scene - routes to either sync or async loading based on settings
     public void LoadScene(int sceneId)
     {
@@ -128,15 +83,11 @@ public class LevelManager : MonoBehaviour, IManager
         // Fade to black
         yield return StartCoroutine(uIManager.FadeToBlack(quickFadeDuration));
 
-        // Load scene ASYNC but don't show progress
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId);
+        // Bypass the loading screen and load the scene immediately
+        SceneManager.LoadScene(sceneId);
 
-        // Wait for it to complete
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
 
+        // TODO: This is repeated in LoadSceneAsync, Refactor into a shared method to avoid duplication.
         // Switch to appropriate state
         if (sceneId == MAIN_MENU_SCENE)
         {
@@ -214,41 +165,21 @@ public class LevelManager : MonoBehaviour, IManager
         // Kick off the async load
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId);
         asyncLoad.allowSceneActivation = false;
-
-        float startTime = Time.realtimeSinceStartup;
-
-        // Simulate "preparing to load" phase (0% - 20%)
-        yield return StartCoroutine(SimulateProgress(0f, 0.2f, 0.1f));
-
-        // Simulate "loading assets" phase (20% - 70%)
-        yield return StartCoroutine(SimulateProgress(0.2f, 0.7f, 0.1f));
-
-        // Poll the actual async load progress (70% - 90%)
-        while (asyncLoad.progress < 0.9f)
+        
+        // Simulated Loading progess with jitter and stalls to make it feel more realistic 
+        if (simulateLoading)
         {
-            float progressValue = Mathf.Lerp(0.7f, 0.9f, asyncLoad.progress / 0.9f);
-            loadingUIController.UpdateProgressBar(progressValue, SelectRandomAssetName());
-            yield return null;
+            currentProgress = 0f;
+            yield return StartCoroutine(SimulateProgress(2.0f)); 
         }
-
-        // Simulate "finalizing" phase (90% - 100%)
-        yield return StartCoroutine(SimulateProgress(0.9f, 1.0f, 0.3f));
-
+       
         // Update the message to show completion
         loadingUIController.UpdateProgressBar(1.0f, "Loading Complete");
 
-        // Hold at 100% for a brief moment
-        yield return new WaitForSecondsRealtime(holdAt100PercentDelay);
+
 
         // STEP 4: Fade to black before scene transition
         yield return StartCoroutine(uIManager.FadeToBlack(standardFadeDuration));
-
-        // Ensure minimum load time has elapsed
-        float elapsedTime = Time.realtimeSinceStartup - startTime;
-        if (elapsedTime < minimumLoadTime)
-        {
-            yield return new WaitForSecondsRealtime(minimumLoadTime - elapsedTime);
-        }
 
         // Now activate the scene
         asyncLoad.allowSceneActivation = true;
@@ -278,33 +209,41 @@ public class LevelManager : MonoBehaviour, IManager
     }
 
     // Helper coroutine to simulate loading progress
-    private IEnumerator SimulateProgress(float startProgress, float endProgress, float baseDuration)
+    private IEnumerator SimulateProgress(float duration)
     {
-        float duration = baseDuration;
+        const float jitterStrength = 2.5f;
+        const float stallChancePerSecond = 0.5f; // avg number of stalls per second of real playback
+        const float stallDuration = 0.1f;
+
+        float start = currentProgress;
         float elapsed = 0f;
-        float current = startProgress;
 
         while (elapsed < duration)
         {
-            elapsed += Time.unscaledDeltaTime;
+            float durationTime = Time.unscaledDeltaTime;
+            elapsed += durationTime;
 
-            float t = Mathf.Clamp01(elapsed / duration);
-            float noise = Mathf.PerlinNoise(Time.time * burstStrength, 0f);
-
-            if (UnityEngine.Random.value < stallChance)
+            // Scale the roll by dt so frame rate can't change how often stalls occur
+            if (UnityEngine.Random.value < stallChancePerSecond * durationTime)
             {
                 yield return new WaitForSecondsRealtime(stallDuration);
+                elapsed += stallDuration; // count the stall against the target duration
             }
 
+            float t = Mathf.Clamp01(elapsed / duration);
+            float noise = Mathf.PerlinNoise(Time.time * jitterStrength, 0f);
             float noisyT = Mathf.Clamp01(t + (noise - 0.5f) * 0.3f);
-            current = Mathf.Lerp(startProgress, endProgress, noisyT);
 
-            loadingUIController.UpdateProgressBar(current, SelectRandomAssetName());
+            currentProgress = Mathf.Lerp(start, 1f, noisyT);
+            loadingUIController.UpdateProgressBar(currentProgress, SelectRandomAssetName());
 
-            yield return new WaitForSecondsRealtime(fakeLoadStepDelay);
+            yield return null;
         }
 
-        loadingUIController.UpdateProgressBar(endProgress, SelectRandomAssetName());
+        currentProgress = 1f;
+        loadingUIController.UpdateProgressBar(1f, "Loading Complete");
+
+        yield return new WaitForSecondsRealtime(holdAt100PercentDelay);
     }
 
     private string SelectRandomAssetName()

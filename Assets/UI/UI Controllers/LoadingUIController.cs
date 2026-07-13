@@ -17,6 +17,14 @@ public class LoadingUIController : MonoBehaviour
 
     private float spinnerRotation;
 
+    void Start()
+    {
+        // We use Start() to Initialize UIControllers
+        // This ensures to ensure all Managers are initialized in Awake()
+        Initialize();
+    }
+
+
     public void Initialize()
     {
         #region Set Manager References

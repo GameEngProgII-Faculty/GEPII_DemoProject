@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class InteractionManager : MonoBehaviour, IManager
+public class InteractionManager : MonoBehaviour
 {
     // Singleton instance of GameManager for global access
     public static InteractionManager Instance { get; private set; }
@@ -33,46 +33,26 @@ public class InteractionManager : MonoBehaviour, IManager
 
     private Transform cameraRoot; // Reference to the player's camera root transform
 
-    public void Awake()
+    private void Awake()
     {
-        #region Singleton
-        // Singleton pattern to ensure only one instance of GameManager exists
+        #region Singleton Pattern Setup
 
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
+        // Enforce a unique instance: if one already exists, self-destruct.
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
+
+        // Establish this instance as the global instance and persist across scene loads.
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
         #endregion
 
-        // Register with Managers root
-        Managers.Instance.RegisterManager(this);
+        Debug.Log($"{GetType().Name}: Initialized");
     }
-
-    public async Task<bool> InitializeAsync()
-    {
-        await Task.Yield();
-
-        try
-        {
-            interactableLayer = LayerMask.GetMask("Interactable");
-
-            cameraRoot = PlayerController.Instance.CameraRoot;
-            initialized = true;
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"{Name}: Initialization failed — {ex.Message}");
-            return false;
-        }
-
-        return true;
-    }
+   
 
     private void Update()
     {
