@@ -1,21 +1,17 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class PauseUIController : MonoBehaviour
 {
-    GameManager gameManager;
-    UIManager uIManager;
-    LevelManager levelManager;
-    InputManager inputManager;
-    GameStateManager gameStateManager;
+    public UIManager uIManager;
+    public LevelManager levelManager;
+    public InputManager inputManager;
+    public GameStateManager gameStateManager;
 
-    UIDocument pauseUIDoc;
-
-    Button resumeButton;
-    Button mainMenuButton;
-    Button quitButton;
-
-    private Button[] menuButtons;
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button optionsButton;
+    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button quitButton;
 
     void Start()
     {
@@ -26,60 +22,41 @@ public class PauseUIController : MonoBehaviour
 
     public void Initialize()
     {
-        #region Set UI References
+        #region Set Manager References
 
-        // Set UI Document Reference ( "??=" if not already set)
-        pauseUIDoc ??= GetComponent<UIDocument>();
-        if (pauseUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
+        // Set Managers References ( "??=" if not already set)
+        uIManager ??= UIManager.Instance;
+        levelManager ??= LevelManager.Instance;
+        inputManager ??= InputManager.Instance;
+        gameStateManager ??= GameStateManager.Instance;
 
-        // Set Button References ( "??=" if not already set)
-        resumeButton ??= pauseUIDoc.rootVisualElement.Q<Button>("ResumeButton");
-        mainMenuButton ??= pauseUIDoc.rootVisualElement.Q<Button>("MainMenuButton");
-        quitButton ??= pauseUIDoc.rootVisualElement.Q<Button>("QuitButton");
+        //check manager references for null
+        if (uIManager == null) Debug.LogError("UIManager reference is null!");
+        if (levelManager == null) Debug.LogError("LevelManager reference is null!");
+        if (inputManager == null) Debug.LogError("InputManager reference is null!");
+        if (gameStateManager == null) Debug.LogError("GameStateManager reference is null!");
 
-        // Check to make sure buttons are found
-        if (resumeButton == null) Debug.LogError("Resume Button not found in PauseMenuUI Doc");
-        if (mainMenuButton == null) Debug.LogError("MainMenu Button not found in PauseMenuUI Doc");
-        if (quitButton == null) Debug.LogError("Quit Button not found in PauseMenuUI Doc");
+        #endregion
+
+
+        #region Check UI References
+
+        // Check Button References (assigned via Inspector)
+        if (resumeButton == null) Debug.LogError("Resume Button not assigned on PauseUIController");
+        if (optionsButton == null) Debug.LogError("Options Button not assigned on PauseUIController");
+        if (mainMenuButton == null) Debug.LogError("MainMenu Button not assigned on PauseUIController");
+        if (quitButton == null) Debug.LogError("Quit Button not assigned on PauseUIController");
 
         #endregion
 
         #region Subscribe to Button Click Events
 
-        resumeButton.clicked += OnResumeButtonClicked;
-        mainMenuButton.clicked += OnMainMenuButtonClicked;
-        quitButton.clicked += OnQuitButtonClicked;
+        resumeButton.onClick.AddListener(OnResumeButtonClicked);
+        optionsButton.onClick.AddListener(OnOptionsClicked);
+        mainMenuButton.onClick.AddListener(OnMainMenuButtonClicked);
+        quitButton.onClick.AddListener(OnQuitButtonClicked);
 
         #endregion
-
-        #region Set UI References
-
-        // Set UI Document Reference ( "??=" if not already set)
-        pauseUIDoc ??= GetComponent<UIDocument>();
-        if (pauseUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
-
-        // Set Button References ( "??=" if not already set)
-        resumeButton ??= pauseUIDoc.rootVisualElement.Q<Button>("ResumeButton");
-        mainMenuButton ??= pauseUIDoc.rootVisualElement.Q<Button>("MainMenuButton");
-        quitButton ??= pauseUIDoc.rootVisualElement.Q<Button>("QuitButton");
-
-        // Check to make sure buttons are found
-        if (resumeButton == null) Debug.LogError("Resume Button not found in PauseMenuUI Doc");
-        if (mainMenuButton == null) Debug.LogError("MainMenu Button not found in PauseMenuUI Doc");
-        if (quitButton == null) Debug.LogError("Quit Button not found in PauseMenuUI Doc");
-
-        #endregion
-
-        #region Subscribe to Button Click Events
-
-        resumeButton.clicked += OnResumeButtonClicked;
-        mainMenuButton.clicked += OnMainMenuButtonClicked;
-        quitButton.clicked += OnQuitButtonClicked;
-
-        #endregion
-
-
-
     }
 
 
@@ -91,6 +68,11 @@ public class PauseUIController : MonoBehaviour
         Debug.Log("Resume Clicked");
 
         gameStateManager.Resume();
+    }
+
+    private void OnOptionsClicked()
+    {
+        Debug.Log("Options Clicked - Not Implemented Yet");
     }
 
     private void OnMainMenuButtonClicked()
@@ -116,8 +98,9 @@ public class PauseUIController : MonoBehaviour
 
     private void OnDestroy()
     {
-        resumeButton.clicked -= OnResumeButtonClicked;
-        mainMenuButton.clicked -= OnMainMenuButtonClicked;
-        quitButton.clicked -= OnQuitButtonClicked;
+        resumeButton.onClick.RemoveListener(OnResumeButtonClicked);
+        optionsButton.onClick.RemoveListener(OnOptionsClicked);
+        mainMenuButton.onClick.RemoveListener(OnMainMenuButtonClicked);
+        quitButton.onClick.RemoveListener(OnQuitButtonClicked);
     }
 }

@@ -19,12 +19,12 @@ public class GameStateManager : MonoBehaviour
     private IState currentState;  // Current active state
     private IState lastState;     // Last active state (kept private for encapsulation)
 
-    // Instantiate GameStates
-    public GameState_MainMenu gameState_MainMenu = GameState_MainMenu.Instance;
-    public GameState_Gameplay gameState_Gameplay = GameState_Gameplay.Instance;
-    public GameState_Paused gameState_Paused = GameState_Paused.Instance;
-    public GameState_BootLoad gameState_BootLoad = GameState_BootLoad.Instance;
-    public GameState_Loading gameState_Loading = GameState_Loading.Instance;
+    // Cached shortcut references to the state singletons.
+    GameState_MainMenu gameState_MainMenu => GameState_MainMenu.Instance;
+    GameState_Gameplay gameState_Gameplay => GameState_Gameplay.Instance;
+    GameState_Paused gameState_Paused => GameState_Paused.Instance;
+    GameState_BootLoad gameState_BootLoad => GameState_BootLoad.Instance;
+    GameState_Loading gameState_Loading => GameState_Loading.Instance;
 
     private void Awake()
     {

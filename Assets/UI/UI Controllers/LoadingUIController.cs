@@ -1,18 +1,20 @@
-﻿using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class LoadingUIController : MonoBehaviour
 {
-    GameManager gameManager;
+
     UIManager uIManager;
     LevelManager levelManager;
     InputManager inputManager;
     GameStateManager gameStateManager;
 
-    UIDocument loadingUIDoc;
-    ProgressBar progressBar;
-    Label assetLabel;
-    Image loadingSpinner;
+    // Progress bar is a UGUI Slider (non-interactive), driven via value (0-1).
+    [SerializeField] private Slider progressSlider;
+    [SerializeField] private TMP_Text progressPercentText;
+    [SerializeField] private TMP_Text assetLabel;
+    [SerializeField] private Image loadingSpinner;
 
 
     private float spinnerRotation;
@@ -44,23 +46,13 @@ public class LoadingUIController : MonoBehaviour
         #endregion
 
 
-        #region Set UI References
+        #region Check UI References
 
-        // Set UI Document Reference ( "??=" if not already set)
-        loadingUIDoc ??= GetComponent<UIDocument>();
-        if (loadingUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
-
-        // Set progressBar ( "??=" if not already set)
-        progressBar ??= loadingUIDoc.rootVisualElement.Q<ProgressBar>("ProgressBar");
-        if (progressBar == null) Debug.LogError("ProgressBar not found in LoadingUI Doc");
-
-        // Set assetLabel ( "??=" if not already set)
-        assetLabel ??= loadingUIDoc.rootVisualElement.Q<Label>("AssetLabel");
-        if (assetLabel == null) Debug.LogError("assetLabel not found in LoadingUI Doc");
-
-        // Set loadingSpinner ( "??=" if not already set)
-        loadingSpinner ??= loadingUIDoc.rootVisualElement.Q<Image>("LoadingSpinner");
-        if (loadingSpinner == null) Debug.LogError("loadingSpinner not found in LoadingUI Doc");
+        // Check UI References (assigned via Inspector)
+        if (progressSlider == null) Debug.LogError("progressSlider not assigned on LoadingUIController");
+        if (progressPercentText == null) Debug.LogError("progressPercentText not assigned on LoadingUIController");
+        if (assetLabel == null) Debug.LogError("assetLabel not assigned on LoadingUIController");
+        if (loadingSpinner == null) Debug.LogError("loadingSpinner not assigned on LoadingUIController");
 
         // Initialize the progress bar
         UpdateProgressBar(0f, "Loading...");
@@ -72,11 +64,11 @@ public class LoadingUIController : MonoBehaviour
 
     public void UpdateProgressBar(float progress, string assetName)
     {
-        // progress bar is a value between 0 and 1
-        progressBar.value = progress;
+        // progress is a value between 0 and 1
+        progressSlider.value = progress;
 
         // Shows 0-100% (just the integer part)
-        progressBar.title = $"{(int)(progress * 100)}%";
+        progressPercentText.text = $"{(int)(progress * 100)}%";
 
         assetLabel.text = assetName + "...";
     }
@@ -88,7 +80,7 @@ public class LoadingUIController : MonoBehaviour
 
         spinnerRotation -= 200f * Time.unscaledDeltaTime;
 
-        loadingSpinner.style.rotate = new Rotate(new Angle(spinnerRotation, AngleUnit.Degree));
+        loadingSpinner.rectTransform.localEulerAngles = new Vector3(0f, 0f, spinnerRotation);
     }
 
 

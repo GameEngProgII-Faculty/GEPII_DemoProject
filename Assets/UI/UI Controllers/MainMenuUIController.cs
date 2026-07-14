@@ -1,28 +1,23 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class MainMenuUIController : MonoBehaviour
 {
-    GameManager gameManager;
     UIManager uIManager;
     LevelManager levelManager;
     InputManager inputManager;
     GameStateManager gameStateManager;
 
-    UIDocument mainMenuUIDoc;
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button optionsButton;
+    [SerializeField] private Button quitButton;
 
-    Button playButton;
-    Button optionsButton;
-    Button quitButton;
-
-    Button[] menuButtons;
-
-   void Start()
-   {
+    void Start()
+    {
         // We use Start() to Initialize UIControllers
         // This ensures to ensure all Managers are initialized in Awake()
         Initialize();
-   }
+    }
 
     public void Initialize()
     {
@@ -42,35 +37,24 @@ public class MainMenuUIController : MonoBehaviour
 
         #endregion
 
-        #region Set UI References
+        #region Check UI References
 
-        // Set UI Document Reference ( "??=" if not already set)
-        mainMenuUIDoc ??= GetComponent<UIDocument>();
-        if (mainMenuUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
-
-        // Set Button References ( "??=" if not already set)
-        playButton = mainMenuUIDoc.rootVisualElement.Q<Button>("PlayButton");
-        optionsButton = mainMenuUIDoc.rootVisualElement.Q<Button>("OptionsButton");
-        quitButton = mainMenuUIDoc.rootVisualElement.Q<Button>("QuitButton");
-
-        // Check to make sure buttons are found
-        if (playButton == null) Debug.LogError("Play Button not found in MainMenu_UIDoc");
-        if (optionsButton == null) Debug.LogError("Options Button not found in MainMenu_UIDoc");
-        if (quitButton == null) Debug.LogError("Quit Button not found in MainMenu_UIDoc");
+        // Check Button References (assigned via Inspector)
+        if (playButton == null) Debug.LogError("Play Button not assigned on MainMenuUIController");
+        if (optionsButton == null) Debug.LogError("Options Button not assigned on MainMenuUIController");
+        if (quitButton == null) Debug.LogError("Quit Button not assigned on MainMenuUIController");
 
         #endregion
 
         #region Subscribe to Button Click Events
 
-        if (playButton != null) playButton.clicked += OnPlayButtonClicked;
-        if (optionsButton != null) optionsButton.clicked += OnOptionsClicked;
-        if (quitButton != null) quitButton.clicked += OnQuitButtonClicked;
+        if (playButton != null) playButton.onClick.AddListener(OnPlayButtonClicked);
+        if (optionsButton != null) optionsButton.onClick.AddListener(OnOptionsClicked);
+        if (quitButton != null) quitButton.onClick.AddListener(OnQuitButtonClicked);
 
         #endregion
     }
 
-
-    
 
 
 
@@ -100,9 +84,9 @@ public class MainMenuUIController : MonoBehaviour
     {
         #region UnSubscribe to Button Click Events
 
-        if (playButton != null) playButton.clicked -= OnPlayButtonClicked;
-        if (optionsButton != null) optionsButton.clicked -= OnOptionsClicked;
-        if (quitButton != null) quitButton.clicked -= OnQuitButtonClicked;
+        if (playButton != null) playButton.onClick.RemoveListener(OnPlayButtonClicked);
+        if (optionsButton != null) optionsButton.onClick.RemoveListener(OnOptionsClicked);
+        if (quitButton != null) quitButton.onClick.RemoveListener(OnQuitButtonClicked);
 
         #endregion
     }

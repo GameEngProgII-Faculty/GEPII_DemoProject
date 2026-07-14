@@ -1,16 +1,11 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class GameplayUIController : MonoBehaviour
 {
-    GameManager gameManager;
     UIManager uIManager;
     LevelManager levelManager;
     InputManager inputManager;
     GameStateManager gameStateManager;
-
-    UIDocument gameplayUIDoc;
-
 
     void Start()
     {
@@ -30,18 +25,6 @@ public class GameplayUIController : MonoBehaviour
         if (inputManager == null) Debug.LogError("InputManager reference is null!");
         if (levelManager == null) Debug.LogError("LevelManager reference is null!");
         if (uIManager == null) Debug.LogError("UIManager reference is null!");
-
-        #region Set UI References
-
-        // Set UI Document Reference ( "??=" if not already set)
-        gameplayUIDoc ??= GetComponent<UIDocument>();
-        if (gameplayUIDoc == null) Debug.LogError("No UIDocument component found on this gameobject!");
-
-        #endregion
     }
-
-
-
-
 
 }

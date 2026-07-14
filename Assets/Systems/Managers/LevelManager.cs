@@ -19,6 +19,12 @@ public class LevelManager : MonoBehaviour
 
     LoadingUIController loadingUIController => UIManager.Instance.loadingUIController;
 
+    // Cached shortcut references to the state singletons.
+    GameState_MainMenu gameState_MainMenu => GameState_MainMenu.Instance;
+    GameState_Gameplay gameState_Gameplay => GameState_Gameplay.Instance;
+    GameState_BootLoad gameState_BootLoad => GameState_BootLoad.Instance;
+    GameState_Loading gameState_Loading => GameState_Loading.Instance;
+
     // Named constants for build indices
     public const int BOOTLOADER_SCENE = 0;
     public const int MAIN_MENU_SCENE = 1;
@@ -26,7 +32,7 @@ public class LevelManager : MonoBehaviour
     [Header("Loading Simulation Settings")]
     [SerializeField] private bool simulateLoading = true;
     private float currentProgress = 0f;
-    private float holdAt100PercentDelay = 0.25f;
+    private float holdAt100PercentDelay = 0.5f;
 
 
 
@@ -91,15 +97,15 @@ public class LevelManager : MonoBehaviour
         // Switch to appropriate state
         if (sceneId == MAIN_MENU_SCENE)
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_MainMenu);
+            gameStateManager.SwitchToState(gameState_MainMenu);
         }
         else if (sceneId == BOOTLOADER_SCENE)
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_BootLoad);
+            gameStateManager.SwitchToState(gameState_BootLoad);
         }
         else
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_Gameplay);
+            gameStateManager.SwitchToState(gameState_Gameplay);
         }
 
         // Fade from black to reveal new scene
@@ -157,7 +163,7 @@ public class LevelManager : MonoBehaviour
         yield return StartCoroutine(uIManager.FadeToBlack(standardFadeDuration));
 
         // STEP 2: Switch to the Loading state (UI changes while screen is black)
-        gameStateManager.SwitchToState(gameStateManager.gameState_Loading);
+        gameStateManager.SwitchToState(gameState_Loading);
 
         // STEP 3: Fade from black (reveal loading UI)
         yield return StartCoroutine(uIManager.FadeFromBlack(standardFadeDuration));
@@ -193,15 +199,15 @@ public class LevelManager : MonoBehaviour
         // STEP 5: Switch to the new game state (while still black)
         if (sceneId == MAIN_MENU_SCENE)
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_MainMenu);
+            gameStateManager.SwitchToState(gameState_MainMenu);
         }
         else if (sceneId == BOOTLOADER_SCENE)
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_BootLoad);
+            gameStateManager.SwitchToState(gameState_BootLoad);
         }
         else
         {
-            gameStateManager.SwitchToState(gameStateManager.gameState_Gameplay);
+            gameStateManager.SwitchToState(gameState_Gameplay);
         }
 
         // STEP 6: Fade from black to reveal the new scene

@@ -1,6 +1,0 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/UI/StyleSheets/Menu_USS.uss?fileID=7433441132597879392&amp;guid=4f014ae6a5738b14ebcf62262583c494&amp;type=3#Menu_USS" />
-    <ui:VisualElement name="PlayerHud" style="flex-grow: 1; justify-content: space-between; align-items: center; color: rgb(222, 59, 255); -unity-text-outline-color: rgb(0, 0, 0); -unity-text-outline-width: 2px;">
-        <ui:Label text="~ Gameplay ~" name="GameplayLabel" style="font-size: 40px; -unity-font-definition: url(&quot;project://database/Assets/Art/UI/Fonts/Bangers/Bangers-Regular.ttf?fileID=12800000&amp;guid=6e65d03e979670646a596000bb47e4c3&amp;type=3#Bangers-Regular&quot;); -unity-font-style: italic;" />
-    </ui:VisualElement>
-</ui:UXML>
