@@ -54,7 +54,6 @@ public class LevelManager : MonoBehaviour
 
         // Establish this instance as the global instance and persist across scene loads.
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         #endregion
 

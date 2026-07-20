@@ -50,14 +50,12 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
         // Establish this instance as the global instance and persist across scene loads.
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        inputs = new Inputs();
-        inputs.Player.SetCallbacks(this);
-
         #endregion
 
         Debug.Log($"{GetType().Name}: Initialized");
+
+        inputs = new Inputs();
+        inputs.Player.SetCallbacks(this);
     }
 
 

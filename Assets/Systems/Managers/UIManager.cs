@@ -34,8 +34,6 @@ public class UIManager : MonoBehaviour
 
         // Establish this instance as the global instance and persist across scene loads.
         Instance = this;
-        DontDestroyOnLoad(gameObject);
-
         #endregion
 
         // Create global fade UI at runtime
