@@ -43,15 +43,11 @@ public class GameStateManager : MonoBehaviour
         #endregion
 
         Debug.Log($"{GetType().Name}: Initialized");
-    }
 
-
-
-    private void Start()
-    {
         currentState = gameState_BootLoad;
         currentActiveState = currentState.ToString();
         currentState.EnterState();
+
     }
 
     public void SwitchToState(IState newState)
