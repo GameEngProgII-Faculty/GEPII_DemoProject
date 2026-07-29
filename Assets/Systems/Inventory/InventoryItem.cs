@@ -2,27 +2,33 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IbeginDragHandler, IDragHandler, IEndDragHandler
+public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Item item;
+    public Image image;
 
-    public Image icon;
-    public GameObject mesh;
+    [HideInInspector] public Item item;
+    [HideInInspector] public Transform parentAfterDrag;
 
-    [HideInInspector]public Transform parentAfterDrag;
+    public UIManager uIManager;
 
-    public void InitializeItem(Item newItem)
-    { 
-        icon.sprite = newItem.icon;
-        mesh = newItem.mesh;
+    void Start()
+    {
+       uIManager = UIManager.Instance;
+     
     }
+
+
+
+
+  
 
     // Drag and Drop functionality
     public void OnBeginDrag(PointerEventData eventData)
     {
-        icon.raycastTarget = false;
+        image.raycastTarget = false;
         parentAfterDrag = transform.parent;
-        transform.SetParent(transform.root);
+        transform.SetParent(UIManager.Instance.rootCanvas.transform);
+        transform.SetAsLastSibling();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -32,8 +38,9 @@ public class InventoryItem : MonoBehaviour, IbeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        icon.raycastTarget = true;
+        image.raycastTarget = true;
         transform.SetParent(parentAfterDrag);
+
     }
 
 

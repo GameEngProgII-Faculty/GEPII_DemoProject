@@ -3,6 +3,8 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour
 {
 
+    public InventorySlot[] InventorySlots;
+
 
     public void AddItemtoIventory()
     {

@@ -10,12 +10,19 @@ public class UIManager : MonoBehaviour
     // Name property for IManager interface implementation
     public string Name => GetType().Name;
 
+    public Canvas rootCanvas;
+
     [Header("UI Panels")]
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject gameplayPanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject loadingScreenPanel;
-    [SerializeField] private GameObject playerInventoryPanel;
+
+
+    [Header("Inventory UI")]
+    [SerializeField] private GameObject darkeningPanel;
+    [SerializeField] private GameObject toolbarPanel;
+    [SerializeField] private GameObject backpackPanel;
 
     public LoadingUIController loadingUIController;
 
@@ -61,6 +68,7 @@ public class UIManager : MonoBehaviour
     {
         HideAllUIMenus();
         gameplayPanel.SetActive(true);
+        toolbarPanel.SetActive(true);
     }
 
     public void ShowLoadingScreenUI()
@@ -72,7 +80,9 @@ public class UIManager : MonoBehaviour
     public void ShowPlayerInventory()
     {
         HideAllUIMenus();
-        playerInventoryPanel.SetActive(true);
+        backpackPanel.SetActive(true);
+        toolbarPanel.SetActive(true);
+        darkeningPanel.SetActive(true);
         gameplayPanel.SetActive(true);
     }
 
@@ -91,7 +101,9 @@ public class UIManager : MonoBehaviour
         gameplayPanel.SetActive(false);
         pausePanel.SetActive(false);
         loadingScreenPanel.SetActive(false);
-        playerInventoryPanel.SetActive(false);
+        toolbarPanel.SetActive(false);
+        backpackPanel.SetActive(false);
+        darkeningPanel.SetActive(false);
     }
 
 
