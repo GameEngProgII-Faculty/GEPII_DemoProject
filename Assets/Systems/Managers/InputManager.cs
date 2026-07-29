@@ -34,6 +34,9 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     public event Action<InputAction.CallbackContext> CrouchInputEvent;
     public event Action<InputAction.CallbackContext> InteractInputEvent;
     public event Action<InputAction.CallbackContext> SprintInputEvent;
+    public event Action<InputAction.CallbackContext> OnInventoryInputEvent;
+    public event Action<InputAction.CallbackContext> OnPauseInputEvent;
+
 
     #endregion
 
@@ -99,6 +102,12 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     // Called by the Input System when the sprint action state changes.
     // Triggers SprintInputEvent and forwards the action state context to all subscribers.
     public void OnSprint(InputAction.CallbackContext context) => SprintInputEvent?.Invoke(context);
+
+    public void OnInventory(InputAction.CallbackContext context) => OnInventoryInputEvent?.Invoke(context);
+
+    public void OnPause(InputAction.CallbackContext context) => OnPauseInputEvent?.Invoke(context);
+
+
 
     #endregion
 

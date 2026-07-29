@@ -1,11 +1,15 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameState_Gameplay : IState
 {
+
+    // Cached shortcut references
     GameStateManager gameStateManager => GameStateManager.Instance;
     PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
+    InputManager inputManager => InputManager.Instance;
 
 
 
@@ -23,6 +27,7 @@ public class GameState_Gameplay : IState
     #endregion
 
 
+   
 
     public void EnterState()
     {
@@ -35,8 +40,12 @@ public class GameState_Gameplay : IState
         uIManager.ShowGameplayUI();
 
 
-
+        // Subscribe to necessary input events
+        inputManager.OnPauseInputEvent += HandlePauseInput;
+        inputManager.OnInventoryInputEvent += HandleInventoryInput;
     }
+
+ 
 
     public void FixedUpdateState()
     {
@@ -46,20 +55,6 @@ public class GameState_Gameplay : IState
     public void UpdateState()
     {
         playerController.HandlePlayerMovement();
-
-        // Debug.Log("Running Gameplay Update State");
-
-
-        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
-        {
-            gameStateManager.Pause();
-        }
-
-
-
-
-
-
     }
 
     public void LateUpdateState()
@@ -69,7 +64,20 @@ public class GameState_Gameplay : IState
 
     public void ExitState()
     {
-        //Debug.Log("Exiting gameplay State");
+        // Ususcribe from Input events
+        inputManager.OnPauseInputEvent -= HandlePauseInput;
+        inputManager.OnInventoryInputEvent -= HandleInventoryInput;
+    }
+
+
+    private void HandleInventoryInput(InputAction.CallbackContext context)
+    {
+        gameStateManager.SwitchToState(GameState_PlayerInventory.Instance);
+    }
+
+    private void HandlePauseInput(InputAction.CallbackContext context)
+    {
+        gameStateManager.Pause();
     }
 
 }

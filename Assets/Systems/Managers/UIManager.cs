@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameplayPanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject loadingScreenPanel;
+    [SerializeField] private GameObject playerInventoryPanel;
 
     public LoadingUIController loadingUIController;
 
@@ -68,6 +69,17 @@ public class UIManager : MonoBehaviour
         loadingScreenPanel.SetActive(true);
     }
 
+    public void ShowPlayerInventory()
+    {
+        HideAllUIMenus();
+        playerInventoryPanel.SetActive(true);
+        gameplayPanel.SetActive(true);
+    }
+
+
+
+
+
     public void HideAllUIMenus()
     {
         if (mainMenuPanel == null) Debug.LogError("mainMenuPanel is null, please check the UIManager setup.");
@@ -79,7 +91,12 @@ public class UIManager : MonoBehaviour
         gameplayPanel.SetActive(false);
         pausePanel.SetActive(false);
         loadingScreenPanel.SetActive(false);
+        playerInventoryPanel.SetActive(false);
     }
+
+
+
+
 
     #region Global Fade Panel
 

@@ -25,6 +25,7 @@ public class GameStateManager : MonoBehaviour
     GameState_Paused gameState_Paused => GameState_Paused.Instance;
     GameState_BootLoad gameState_BootLoad => GameState_BootLoad.Instance;
     GameState_Loading gameState_Loading => GameState_Loading.Instance;
+    GameState_PlayerInventory gameState_PlayerInventory => GameState_PlayerInventory.Instance;
 
     private void Awake()
     {
