@@ -35,7 +35,7 @@ public class GameState_Gameplay : IState
 
         Time.timeScale = 1f; // Resume  
         
-        Cursor.visible = false;
+        //Cursor.visible = false;
 
         uIManager.ShowGameplayUI();
 
