@@ -1,5 +1,5 @@
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -9,6 +9,13 @@ public class InventoryManager : MonoBehaviour
     public int itemStackLimit = 5; // Maximum number of items that can be stacked in one slot
     public InventorySlot[] inventorySlots;
     public GameObject inventoryItemPrefab;
+
+    [SerializeField] private GameObject toolbarSelector;
+
+    int selectedSlot = -1; // Index of the currently selected inventory slot
+
+      
+
 
     private void Awake()
     {
@@ -25,6 +32,32 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
 
         #endregion
+    }
+
+    private void Start()
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(inventorySlots[0].transform.parent.GetComponent<RectTransform>());
+        ChangeSelectedSlot(0);
+    }
+
+    public void ChangeSelectedSlot(int newValue)
+    {
+        if (selectedSlot >= 0)
+        {
+            inventorySlots[selectedSlot].DeSelect(); // Deselect the previously selected slot
+        }
+
+        inventorySlots[newValue].Select(); // Select the new slot
+        selectedSlot = newValue; // Update the selected slot index
+
+        // Move toolbarSelector to the new selected slot
+        if (newValue >= 0 && newValue < inventorySlots.Length)
+        {
+            RectTransform selectorRT = toolbarSelector.GetComponent<RectTransform>();
+            RectTransform slotRT = inventorySlots[newValue].GetComponent<RectTransform>();
+            selectorRT.position = slotRT.position; // still works if same canvas
+        }
     }
 
 

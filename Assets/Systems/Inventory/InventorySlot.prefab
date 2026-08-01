@@ -60,8 +60,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5882353}
-  m_RaycastTarget: 1
+  m_Color: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 0.39215687}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -89,7 +89,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c2e2105f7b83a845bd12e38ab57248d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlot
-  icon: {fileID: 0}
+  image: {fileID: 8400969667140404449}
+  selectedColor: {r: 0.6150443, g: 1, b: 0.58679235, a: 0.39215687}
+  notSelectedColor: {r: 0.7725491, g: 0.7725491, b: 0.7725491, a: 0.39215687}
   parentAfterDrag: {fileID: 0}
 --- !u!114 &876428231625139620
 MonoBehaviour:

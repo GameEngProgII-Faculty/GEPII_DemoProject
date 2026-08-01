@@ -10,6 +10,7 @@ public class GameState_Gameplay : IState
     PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
     InputManager inputManager => InputManager.Instance;
+    InventoryManager inventoryManager => InventoryManager.Instance;
 
 
 
@@ -43,9 +44,11 @@ public class GameState_Gameplay : IState
         // Subscribe to necessary input events
         inputManager.OnPauseInputEvent += HandlePauseInput;
         inputManager.OnInventoryInputEvent += HandleInventoryInput;
+
+        inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
+
     }
 
- 
 
     public void FixedUpdateState()
     {
@@ -79,5 +82,11 @@ public class GameState_Gameplay : IState
     {
         gameStateManager.Pause();
     }
+
+    private void HandleToolbarSlotInput(InputAction.CallbackContext context, int inputID)
+    {
+        inventoryManager.ChangeSelectedSlot(inputID - 1);
+    }
+
 
 }

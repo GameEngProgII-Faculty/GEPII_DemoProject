@@ -38,6 +38,10 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     public event Action<InputAction.CallbackContext> OnPauseInputEvent;
 
 
+    // Toolbar Slot Selection Inputs
+    public event Action<InputAction.CallbackContext, int> OnToolbarSlotInputEvent;
+
+
     #endregion
 
     void Awake()
@@ -107,6 +111,15 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
     public void OnPause(InputAction.CallbackContext context) => OnPauseInputEvent?.Invoke(context);
 
+
+    // === Toolbar Select Inputs ===
+
+    public void OnToolbarSlot1(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 1);
+    public void OnToolbarSlot2(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 2);
+    public void OnToolbarSlot3(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 3);
+    public void OnToolbarSlot4(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 4);
+    public void OnToolbarSlot5(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 5);
+    public void OnToolbarSlot6(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 6);
 
 
     #endregion

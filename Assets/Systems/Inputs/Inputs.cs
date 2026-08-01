@@ -163,6 +163,60 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""a3e1d707-59e5-4cbf-81f7-1bca2df65a64"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""65feaa1d-4404-46a8-a655-c9b2aa860576"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""b4b7f99a-46ef-460f-b6f5-57fc88531423"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot4"",
+                    ""type"": ""Button"",
+                    ""id"": ""70812a42-94fb-4162-84b9-de6a454232a8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot5"",
+                    ""type"": ""Button"",
+                    ""id"": ""81ed273e-0c36-4e60-8420-b587720347a2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarSlot6"",
+                    ""type"": ""Button"",
+                    ""id"": ""6dfdace5-03aa-4f4b-8b49-9d5c12be0ce0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -363,6 +417,72 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""686041f7-3421-42be-bca8-9cef75c3926a"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d2cad269-8eed-47ca-bffe-941c0561dd20"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""94af2d2c-4d7e-41a7-8e10-4310541912a1"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46961dad-eca0-43d6-900a-1661545e6411"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e998212d-470a-4860-bf32-1c6a7f98192c"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d71aee1-97ec-4377-9dda-d26fd16d25c1"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarSlot6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -379,6 +499,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_ToolbarSlot1 = m_Player.FindAction("ToolbarSlot1", throwIfNotFound: true);
+        m_Player_ToolbarSlot2 = m_Player.FindAction("ToolbarSlot2", throwIfNotFound: true);
+        m_Player_ToolbarSlot3 = m_Player.FindAction("ToolbarSlot3", throwIfNotFound: true);
+        m_Player_ToolbarSlot4 = m_Player.FindAction("ToolbarSlot4", throwIfNotFound: true);
+        m_Player_ToolbarSlot5 = m_Player.FindAction("ToolbarSlot5", throwIfNotFound: true);
+        m_Player_ToolbarSlot6 = m_Player.FindAction("ToolbarSlot6", throwIfNotFound: true);
     }
 
     ~@Inputs()
@@ -467,6 +593,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_ToolbarSlot1;
+    private readonly InputAction m_Player_ToolbarSlot2;
+    private readonly InputAction m_Player_ToolbarSlot3;
+    private readonly InputAction m_Player_ToolbarSlot4;
+    private readonly InputAction m_Player_ToolbarSlot5;
+    private readonly InputAction m_Player_ToolbarSlot6;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -510,6 +642,30 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Pause".
         /// </summary>
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot1".
+        /// </summary>
+        public InputAction @ToolbarSlot1 => m_Wrapper.m_Player_ToolbarSlot1;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot2".
+        /// </summary>
+        public InputAction @ToolbarSlot2 => m_Wrapper.m_Player_ToolbarSlot2;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot3".
+        /// </summary>
+        public InputAction @ToolbarSlot3 => m_Wrapper.m_Player_ToolbarSlot3;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot4".
+        /// </summary>
+        public InputAction @ToolbarSlot4 => m_Wrapper.m_Player_ToolbarSlot4;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot5".
+        /// </summary>
+        public InputAction @ToolbarSlot5 => m_Wrapper.m_Player_ToolbarSlot5;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarSlot6".
+        /// </summary>
+        public InputAction @ToolbarSlot6 => m_Wrapper.m_Player_ToolbarSlot6;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -560,6 +716,24 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @ToolbarSlot1.started += instance.OnToolbarSlot1;
+            @ToolbarSlot1.performed += instance.OnToolbarSlot1;
+            @ToolbarSlot1.canceled += instance.OnToolbarSlot1;
+            @ToolbarSlot2.started += instance.OnToolbarSlot2;
+            @ToolbarSlot2.performed += instance.OnToolbarSlot2;
+            @ToolbarSlot2.canceled += instance.OnToolbarSlot2;
+            @ToolbarSlot3.started += instance.OnToolbarSlot3;
+            @ToolbarSlot3.performed += instance.OnToolbarSlot3;
+            @ToolbarSlot3.canceled += instance.OnToolbarSlot3;
+            @ToolbarSlot4.started += instance.OnToolbarSlot4;
+            @ToolbarSlot4.performed += instance.OnToolbarSlot4;
+            @ToolbarSlot4.canceled += instance.OnToolbarSlot4;
+            @ToolbarSlot5.started += instance.OnToolbarSlot5;
+            @ToolbarSlot5.performed += instance.OnToolbarSlot5;
+            @ToolbarSlot5.canceled += instance.OnToolbarSlot5;
+            @ToolbarSlot6.started += instance.OnToolbarSlot6;
+            @ToolbarSlot6.performed += instance.OnToolbarSlot6;
+            @ToolbarSlot6.canceled += instance.OnToolbarSlot6;
         }
 
         /// <summary>
@@ -595,6 +769,24 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @ToolbarSlot1.started -= instance.OnToolbarSlot1;
+            @ToolbarSlot1.performed -= instance.OnToolbarSlot1;
+            @ToolbarSlot1.canceled -= instance.OnToolbarSlot1;
+            @ToolbarSlot2.started -= instance.OnToolbarSlot2;
+            @ToolbarSlot2.performed -= instance.OnToolbarSlot2;
+            @ToolbarSlot2.canceled -= instance.OnToolbarSlot2;
+            @ToolbarSlot3.started -= instance.OnToolbarSlot3;
+            @ToolbarSlot3.performed -= instance.OnToolbarSlot3;
+            @ToolbarSlot3.canceled -= instance.OnToolbarSlot3;
+            @ToolbarSlot4.started -= instance.OnToolbarSlot4;
+            @ToolbarSlot4.performed -= instance.OnToolbarSlot4;
+            @ToolbarSlot4.canceled -= instance.OnToolbarSlot4;
+            @ToolbarSlot5.started -= instance.OnToolbarSlot5;
+            @ToolbarSlot5.performed -= instance.OnToolbarSlot5;
+            @ToolbarSlot5.canceled -= instance.OnToolbarSlot5;
+            @ToolbarSlot6.started -= instance.OnToolbarSlot6;
+            @ToolbarSlot6.performed -= instance.OnToolbarSlot6;
+            @ToolbarSlot6.canceled -= instance.OnToolbarSlot6;
         }
 
         /// <summary>
@@ -691,5 +883,47 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot5" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot5(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarSlot6" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarSlot6(InputAction.CallbackContext context);
     }
 }
