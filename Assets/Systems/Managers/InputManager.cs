@@ -40,6 +40,13 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
     // Toolbar Slot Selection Inputs
     public event Action<InputAction.CallbackContext, int> OnToolbarSlotInputEvent;
+    public event Action<InputAction.CallbackContext> OnToolbarScrollInputEvent;
+
+    // Inventory-only pickup/place/drop input, separate from the world "Interact" action
+    public event Action<InputAction.CallbackContext> InventoryInteractInputEvent;
+
+    // Left-click "use held tool on whatever's focused" input, e.g. mining a ResourceNode
+    public event Action<InputAction.CallbackContext> UseToolInputEvent;
 
 
     #endregion
@@ -120,6 +127,12 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     public void OnToolbarSlot4(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 4);
     public void OnToolbarSlot5(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 5);
     public void OnToolbarSlot6(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 6);
+
+    public void OnToolbarScroll(InputAction.CallbackContext context) => OnToolbarScrollInputEvent?.Invoke(context);
+
+    public void OnInventoryInteract(InputAction.CallbackContext context) => InventoryInteractInputEvent?.Invoke(context);
+
+    public void OnUseTool(InputAction.CallbackContext context) => UseToolInputEvent?.Invoke(context);
 
 
     #endregion

@@ -11,6 +11,7 @@ public class GameState_Gameplay : IState
     UIManager uIManager => UIManager.Instance;
     InputManager inputManager => InputManager.Instance;
     InventoryManager inventoryManager => InventoryManager.Instance;
+    InteractionManager interactionManager => InteractionManager.Instance;
 
 
 
@@ -36,7 +37,7 @@ public class GameState_Gameplay : IState
 
         Time.timeScale = 1f; // Resume  
         
-        //Cursor.visible = false;
+        Cursor.visible = false;
 
         uIManager.ShowGameplayUI();
 
@@ -46,6 +47,8 @@ public class GameState_Gameplay : IState
         inputManager.OnInventoryInputEvent += HandleInventoryInput;
 
         inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
+        inputManager.OnToolbarScrollInputEvent += HandleToolbarScrollInput;
+        inputManager.UseToolInputEvent += HandleUseToolInput;
 
     }
 
@@ -70,6 +73,8 @@ public class GameState_Gameplay : IState
         // Ususcribe from Input events
         inputManager.OnPauseInputEvent -= HandlePauseInput;
         inputManager.OnInventoryInputEvent -= HandleInventoryInput;
+        inputManager.OnToolbarScrollInputEvent -= HandleToolbarScrollInput;
+        inputManager.UseToolInputEvent -= HandleUseToolInput;
     }
 
 
@@ -86,6 +91,30 @@ public class GameState_Gameplay : IState
     private void HandleToolbarSlotInput(InputAction.CallbackContext context, int inputID)
     {
         inventoryManager.ChangeSelectedSlot(inputID - 1);
+    }
+
+    private void HandleToolbarScrollInput(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+
+        float scrollValue = context.ReadValue<float>();
+        if (scrollValue == 0f) return;
+
+        // Scroll up selects the previous slot, scroll down selects the next slot
+        int direction = scrollValue > 0f ? -1 : 1;
+        inventoryManager.ScrollSelectedSlot(direction);
+    }
+
+    // Left click: only ResourceNodes respond to this (with their own required-tool check).
+    // Other interactables (pickups, etc.) stay on the "Interact" (E) action via InteractionManager.
+    private void HandleUseToolInput(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+
+        if (interactionManager.CurrentFocusedInteractable is ResourceNode resourceNode)
+        {
+            resourceNode.OnInteract();
+        }
     }
 
 

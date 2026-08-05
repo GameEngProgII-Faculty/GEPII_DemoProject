@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a87aac8084eb9a44dafe8b363aceb3cb, type: 3}
+  m_Name: Cube
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  type: 1
+  actionType: 0
+  stackable: 1
+  description: This is a cube...
+  icon: {fileID: 21300000, guid: 8a3db2f86ae23ce4ea771f05138e9d91, type: 3}
+  mesh: {fileID: 3188880041605701284, guid: 96120d9eee39a194890d8323eaf2a945, type: 3}

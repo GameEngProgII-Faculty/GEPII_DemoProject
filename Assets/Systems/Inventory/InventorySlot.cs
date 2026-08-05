@@ -2,13 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class InventorySlot : MonoBehaviour, IDropHandler
+public class InventorySlot : MonoBehaviour, IPointerDownHandler, IDropHandler
 {
     [Header("UI")]
     public Image image;
     public Color selectedColor, notSelectedColor;
-
-    [HideInInspector] public Transform parentAfterDrag;
 
     public void Awake()
     {
@@ -19,20 +17,25 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     {
         image.color = selectedColor;
     }
-    
+
     public void DeSelect()
     {
         image.color = notSelectedColor;
     }
 
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+
+        InventoryManager.Instance.SlotClicked(this);
+    }
+
+    // Fires on release when a drag (press + move past the threshold) ends over this slot -
+    // same action as clicking it, so press-drag-release and click-then-click both place/swap the same way.
     public void OnDrop(PointerEventData eventData)
     {
-        if (transform.childCount == 0)
-        {
-            InventoryItem inventoryItem = eventData.pointerDrag.GetComponent<InventoryItem>();
-            inventoryItem.parentAfterDrag = transform;
-        }
+        InventoryManager.Instance.SlotClicked(this);
     }
 
 

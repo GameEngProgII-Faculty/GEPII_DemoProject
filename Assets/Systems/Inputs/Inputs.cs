@@ -217,6 +217,33 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ToolbarScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""2f6a5a3e-6e9a-4c7a-9a1e-2f6c8b8d3a9c"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""InventoryInteract"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b8d6c1a-9e4f-4a2d-8c5e-6f7a1b2c3d4e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool"",
+                    ""type"": ""Button"",
+                    ""id"": ""6e1a8b3c-4d2f-4e9a-8b7c-3d5e6f7a8b9c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -376,17 +403,6 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4b06defe-9d3d-406b-989b-85007378aaec"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Interact"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""1b2dcf6c-79d3-41fc-a5e9-2e49bc1aab2d"",
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
@@ -483,6 +499,39 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""action"": ""ToolbarSlot6"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c1d4b2e-7a3f-4e5b-8c6d-1a2b3c4d5e6f"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToolbarScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5c9e7a2b-1d3f-4e8a-9b6c-2a4d5e6f7a8b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InventoryInteract"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7f2b9c4d-5e3a-4f1b-9c8d-4e6f7a8b9c1d"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -505,6 +554,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_ToolbarSlot4 = m_Player.FindAction("ToolbarSlot4", throwIfNotFound: true);
         m_Player_ToolbarSlot5 = m_Player.FindAction("ToolbarSlot5", throwIfNotFound: true);
         m_Player_ToolbarSlot6 = m_Player.FindAction("ToolbarSlot6", throwIfNotFound: true);
+        m_Player_ToolbarScroll = m_Player.FindAction("ToolbarScroll", throwIfNotFound: true);
+        m_Player_InventoryInteract = m_Player.FindAction("InventoryInteract", throwIfNotFound: true);
+        m_Player_UseTool = m_Player.FindAction("UseTool", throwIfNotFound: true);
     }
 
     ~@Inputs()
@@ -599,6 +651,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ToolbarSlot4;
     private readonly InputAction m_Player_ToolbarSlot5;
     private readonly InputAction m_Player_ToolbarSlot6;
+    private readonly InputAction m_Player_ToolbarScroll;
+    private readonly InputAction m_Player_InventoryInteract;
+    private readonly InputAction m_Player_UseTool;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -667,6 +722,18 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ToolbarSlot6 => m_Wrapper.m_Player_ToolbarSlot6;
         /// <summary>
+        /// Provides access to the underlying input action "Player/ToolbarScroll".
+        /// </summary>
+        public InputAction @ToolbarScroll => m_Wrapper.m_Player_ToolbarScroll;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/InventoryInteract".
+        /// </summary>
+        public InputAction @InventoryInteract => m_Wrapper.m_Player_InventoryInteract;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/UseTool".
+        /// </summary>
+        public InputAction @UseTool => m_Wrapper.m_Player_UseTool;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -734,6 +801,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @ToolbarSlot6.started += instance.OnToolbarSlot6;
             @ToolbarSlot6.performed += instance.OnToolbarSlot6;
             @ToolbarSlot6.canceled += instance.OnToolbarSlot6;
+            @ToolbarScroll.started += instance.OnToolbarScroll;
+            @ToolbarScroll.performed += instance.OnToolbarScroll;
+            @ToolbarScroll.canceled += instance.OnToolbarScroll;
+            @InventoryInteract.started += instance.OnInventoryInteract;
+            @InventoryInteract.performed += instance.OnInventoryInteract;
+            @InventoryInteract.canceled += instance.OnInventoryInteract;
+            @UseTool.started += instance.OnUseTool;
+            @UseTool.performed += instance.OnUseTool;
+            @UseTool.canceled += instance.OnUseTool;
         }
 
         /// <summary>
@@ -787,6 +863,15 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @ToolbarSlot6.started -= instance.OnToolbarSlot6;
             @ToolbarSlot6.performed -= instance.OnToolbarSlot6;
             @ToolbarSlot6.canceled -= instance.OnToolbarSlot6;
+            @ToolbarScroll.started -= instance.OnToolbarScroll;
+            @ToolbarScroll.performed -= instance.OnToolbarScroll;
+            @ToolbarScroll.canceled -= instance.OnToolbarScroll;
+            @InventoryInteract.started -= instance.OnInventoryInteract;
+            @InventoryInteract.performed -= instance.OnInventoryInteract;
+            @InventoryInteract.canceled -= instance.OnInventoryInteract;
+            @UseTool.started -= instance.OnUseTool;
+            @UseTool.performed -= instance.OnUseTool;
+            @UseTool.canceled -= instance.OnUseTool;
         }
 
         /// <summary>
@@ -925,5 +1010,26 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToolbarSlot6(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ToolbarScroll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToolbarScroll(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "InventoryInteract" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInventoryInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool(InputAction.CallbackContext context);
     }
 }

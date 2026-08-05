@@ -48,6 +48,14 @@ public class Outline : MonoBehaviour {
     }
   }
 
+  public bool PrecomputeOutline {
+    get { return precomputeOutline; }
+    set {
+      precomputeOutline = value;
+      needsUpdate = true;
+    }
+  }
+
   [Serializable]
   private class ListVector3 {
     public List<Vector3> data;

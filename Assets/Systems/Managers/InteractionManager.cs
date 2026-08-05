@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class InteractionManager : MonoBehaviour
@@ -14,7 +12,7 @@ public class InteractionManager : MonoBehaviour
     private InputManager inputManager => InputManager.Instance;
 
     [Header("Interaction Settings")]
-    private LayerMask interactableLayer;
+    [SerializeField] private LayerMask interactableLayer = 1 << 6; // "Interactable" layer
     [SerializeField] private float interactionDistance = 3f;
 
 
@@ -30,6 +28,9 @@ public class InteractionManager : MonoBehaviour
 
     // Interface reference used internally
     private IInteractable currentFocusedInteractable;
+
+    // Read-only access for other systems (e.g. GameState_Gameplay's left-click tool use) to see what's currently focused
+    public IInteractable CurrentFocusedInteractable => currentFocusedInteractable;
 
     private Transform cameraRoot; // Reference to the player's camera root transform
 
@@ -51,7 +52,13 @@ public class InteractionManager : MonoBehaviour
 
         Debug.Log($"{GetType().Name}: Initialized");
     }
-   
+
+    private void Start()
+    {
+        cameraRoot = PlayerController.Instance.CameraRoot;
+        initialized = cameraRoot != null;
+    }
+
 
     private void Update()
     {
@@ -86,12 +93,9 @@ public class InteractionManager : MonoBehaviour
                     currentFocusedInteractable.SetFocus(true);
 
                     // 3. Get the prompt text from interactable and tell the UI to show it
-
-                    // use reference to UI text to pass through Interact Prompt
-
-
+                    UIManager.Instance.ShowInteractPrompt(currentFocusedInteractable.GetInteractionPrompt());
                 }
-            } 
+            }
         }
         else if (currentFocusedInteractable != null)
         {
@@ -99,6 +103,8 @@ public class InteractionManager : MonoBehaviour
             currentFocusedInteractable = null;
 
             DebugCurrentInteractable = null;
+
+            UIManager.Instance.HideInteractPrompt();
         }
 
     }
@@ -117,7 +123,7 @@ public class InteractionManager : MonoBehaviour
                 currentFocusedInteractable.OnInteract();
             }
         }
-       
+
 
     }
 

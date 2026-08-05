@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -7,14 +8,21 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance { get; private set; }
 
     public int itemStackLimit = 5; // Maximum number of items that can be stacked in one slot
-    public InventorySlot[] inventorySlots;
+    public InventorySlot[] toolbarSlots;
+    public InventorySlot[] backpackSlots;
     public GameObject inventoryItemPrefab;
 
     [SerializeField] private GameObject toolbarSelector;
 
+    [Header("Drop Offset")]
+    [SerializeField] private float dropDistance = 0.5f;
+    [SerializeField] private float dropHeight = 1.5f;
+
     int selectedSlot = -1; // Index of the currently selected inventory slot
 
-      
+    private InventoryItem heldItem; // The real item currently picked up and following the cursor
+    private InventorySlot heldItemOriginSlot; // Slot the held item is currently "from" (shows its ghost)
+    private GameObject heldItemGhost; // Faded placeholder left behind in heldItemOriginSlot
 
 
     private void Awake()
@@ -34,44 +42,92 @@ public class InventoryManager : MonoBehaviour
         #endregion
     }
 
-    private void Start()
+    private void Update()
+    {
+        // Held item follows the cursor until it's placed in a slot
+        if (heldItem != null)
+        {
+            heldItem.transform.position = Input.mousePosition;
+        }
+    }
+
+
+    // this is a fix to a timing issue where the toolbarSelector is not positioned correctly when the toolbar is first shown
+    // called when the UIManager first shows the toolbar
+    public void OnToolbarShown()
     {
         Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(inventorySlots[0].transform.parent.GetComponent<RectTransform>());
-        ChangeSelectedSlot(0);
+
+        // Keep whatever was previously selected; only default to slot 0 the first time.
+        int slotToSelect = selectedSlot >= 0 ? selectedSlot : 0;
+        ChangeSelectedSlot(slotToSelect);
     }
 
     public void ChangeSelectedSlot(int newValue)
     {
         if (selectedSlot >= 0)
         {
-            inventorySlots[selectedSlot].DeSelect(); // Deselect the previously selected slot
+            toolbarSlots[selectedSlot].DeSelect(); // Deselect the previously selected slot
         }
 
-        inventorySlots[newValue].Select(); // Select the new slot
+        toolbarSlots[newValue].Select(); // Select the new slot
         selectedSlot = newValue; // Update the selected slot index
 
         // Move toolbarSelector to the new selected slot
-        if (newValue >= 0 && newValue < inventorySlots.Length)
+        if (newValue >= 0 && newValue < toolbarSlots.Length)
         {
             RectTransform selectorRT = toolbarSelector.GetComponent<RectTransform>();
-            RectTransform slotRT = inventorySlots[newValue].GetComponent<RectTransform>();
+            RectTransform slotRT = toolbarSlots[newValue].GetComponent<RectTransform>();
             selectorRT.position = slotRT.position; // still works if same canvas
+
+            Debug.Log($"Selected slot changed to {newValue}. Selector moved to {slotRT.position}");
         }
+    }
+
+    // Moves the selected slot by +1/-1 with wraparound, e.g. for mouse scroll wheel input
+    public void ScrollSelectedSlot(int direction)
+    {
+        if (toolbarSlots == null || toolbarSlots.Length == 0) return;
+
+        int newIndex = ((selectedSlot + direction) % toolbarSlots.Length + toolbarSlots.Length) % toolbarSlots.Length;
+        ChangeSelectedSlot(newIndex);
     }
 
 
     public bool AddItemtoInventory(Item item)
     {
-        // Check if any slot already contains the same item and if it is stackable
-        for (int i = 0; i < inventorySlots.Length; i++)
+        // Prefer the toolbar; only spill into the backpack once it's full
+        if (TryAddItemToSlots(item, toolbarSlots)) return true;
+        if (TryAddItemToSlots(item, backpackSlots)) return true;
+
+        // Inventory Full
+        return false;
+    }
+
+    // Adds up to `count` units of an item, e.g. when picking a stack back up off the ground.
+    // Returns how many were actually added, since the inventory may run out of room partway through.
+    public int AddItemsToInventory(Item item, int count)
+    {
+        int added = 0;
+        while (added < count && AddItemtoInventory(item))
         {
-            InventorySlot slot = inventorySlots[i];
+            added++;
+        }
+
+        return added;
+    }
+
+    private bool TryAddItemToSlots(Item item, InventorySlot[] slots)
+    {
+        // Check if any slot already contains the same item and if it is stackable
+        for (int i = 0; i < slots.Length; i++)
+        {
+            InventorySlot slot = slots[i];
             InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
             if (itemInSlot != null &&
                 itemInSlot.item == item &&
                 itemInSlot.count < itemStackLimit &&
-                itemInSlot.item.stackable) 
+                itemInSlot.item.stackable)
             {
                 itemInSlot.count++;
                 itemInSlot.RefreshCount();
@@ -80,9 +136,9 @@ public class InventoryManager : MonoBehaviour
         }
 
         // Find first empty slot
-        for (int i = 0; i < inventorySlots.Length; i++)
+        for (int i = 0; i < slots.Length; i++)
         {
-            InventorySlot slot = inventorySlots[i];
+            InventorySlot slot = slots[i];
             InventoryItem itemSlot = slot.GetComponentInChildren<InventoryItem>();
             if (itemSlot == null)
             {
@@ -90,17 +146,149 @@ public class InventoryManager : MonoBehaviour
                 return true;
             }
         }
-        
-        // Inventory Full
+
         return false;
     }
 
+    // Click-to-pick-up / click-to-place slot interaction (Valheim-style)
+    public void SlotClicked(InventorySlot slot)
+    {
+        if (heldItem == null)
+        {
+            TryPickUpItem(slot);
+        }
+        else
+        {
+            TryPlaceHeldItem(slot);
+        }
+    }
 
+    private void TryPickUpItem(InventorySlot slot)
+    {
+        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+        if (itemInSlot == null) return; // Nothing to pick up
 
+        UIManager.Instance.HideItemTooltip();
 
+        heldItem = itemInSlot;
+        heldItemOriginSlot = slot;
+        heldItemGhost = CreateGhost(slot, itemInSlot.item, itemInSlot.count);
+
+        heldItem.image.raycastTarget = false;
+        heldItem.transform.SetParent(UIManager.Instance.rootCanvas.transform, false);
+        heldItem.transform.SetAsLastSibling();
+    }
+
+    private void TryPlaceHeldItem(InventorySlot targetSlot)
+    {
+        InventoryItem itemInTarget = targetSlot.GetComponentInChildren<InventoryItem>();
+
+        // Empty target, or clicking back on where it came from: just place it, hold ends.
+        if (itemInTarget == null || targetSlot == heldItemOriginSlot)
+        {
+            PlaceHeldItem(targetSlot);
+            return;
+        }
+
+        // Occupied by a different item: swap. The held item lands here; the displaced item becomes newly held.
+        Destroy(heldItemGhost);
+
+        InventoryItem itemToPlace = heldItem;
+        itemToPlace.transform.SetParent(targetSlot.transform, false);
+        itemToPlace.image.raycastTarget = true;
+
+        heldItem = itemInTarget;
+        heldItemOriginSlot = targetSlot;
+        heldItemGhost = CreateGhost(targetSlot, heldItem.item, heldItem.count);
+
+        heldItem.image.raycastTarget = false;
+        heldItem.transform.SetParent(UIManager.Instance.rootCanvas.transform, false);
+        heldItem.transform.SetAsLastSibling();
+    }
+
+    private void PlaceHeldItem(InventorySlot targetSlot)
+    {
+        heldItem.transform.SetParent(targetSlot.transform, false);
+        heldItem.image.raycastTarget = true;
+
+        Destroy(heldItemGhost);
+
+        heldItem = null;
+        heldItemOriginSlot = null;
+        heldItemGhost = null;
+    }
+
+    private GameObject CreateGhost(InventorySlot slot, Item item, int count)
+    {
+        GameObject ghost = Instantiate(inventoryItemPrefab, slot.transform);
+
+        // Reuse the item visuals (icon + count), then strip interactivity so it's a pure placeholder.
+        InventoryItem ghostItem = ghost.GetComponent<InventoryItem>();
+        ghostItem.InitializeItem(item);
+        ghostItem.count = count;
+        ghostItem.RefreshCount();
+
+        Color ghostColor = ghostItem.image.color;
+        ghostColor.a = 0.4f;
+        ghostItem.image.color = ghostColor;
+
+        Destroy(ghostItem);
+
+        return ghost;
+    }
+
+    // Drops the currently held item into the world as its physical mesh
     public void DropItem()
-    { 
-               Debug.Log("Item dropped from inventory");
+    {
+        Debug.Log("Dropping item from inventory");
+
+        if (heldItem == null) return;
+
+        Item droppedItem = heldItem.item;
+        int droppedCount = heldItem.count;
+
+        if (droppedItem.mesh != null)
+        {
+            Debug.Log($"Spawning dropped item mesh for {droppedCount}x {droppedItem.name}");
+
+            GameObject spawnedMesh = Instantiate(droppedItem.mesh, GetDropPosition(), Quaternion.identity);
+
+            // Make sure the object knows what item (and stack size) it represents, regardless of how its prefab was wired up.
+            PickupItem pickup = spawnedMesh.GetComponent<PickupItem>();
+            if (pickup != null)
+            {
+                pickup.SetItem(droppedItem, droppedCount);
+            }
+        }
+
+        Destroy(heldItem.gameObject);
+        Destroy(heldItemGhost);
+
+        heldItem = null;
+        heldItemOriginSlot = null;
+        heldItemGhost = null;
+
+        Debug.Log($"Dropped {droppedCount}x {droppedItem.name} into the world");
+    }
+
+    private Vector3 GetDropPosition()
+    {
+        Transform player = PlayerController.Instance.transform;
+        Vector3 direction = GetMouseDirectionFromPlayer(player);
+
+        return player.position + direction * dropDistance + Vector3.up * dropHeight;
+    }
+
+    // Horizontal direction from the player towards wherever the mouse cursor is currently pointing
+    private Vector3 GetMouseDirectionFromPlayer(Transform player)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return player.forward;
+
+        Vector3 direction = cam.ScreenPointToRay(Input.mousePosition).direction;
+        direction.y = 0f; // Keep the drop on the horizontal plane regardless of where the camera is pitched
+
+        return direction.sqrMagnitude > 0.0001f ? direction.normalized : player.forward;
     }
 
     public void SpawnNewItem(Item item, InventorySlot slot)
@@ -110,5 +298,18 @@ public class InventoryManager : MonoBehaviour
         inventoryItem.InitializeItem(item);
     }
 
+    public Item GetSelectedItem()
+    {
+        InventorySlot slot = toolbarSlots[selectedSlot];
+        InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+          
+        if (itemInSlot != null)
+        {
+            return itemInSlot.item;
+        }
+        
+        return null; // No item in the selected slot
+        
 
+    }
 }

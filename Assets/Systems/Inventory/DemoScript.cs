@@ -19,4 +19,20 @@ public class DemoScript : MonoBehaviour
 
 
     }
+
+    public void GetSelectedItem()        
+    {
+        Item receivedItem = InventoryManager.Instance.GetSelectedItem();
+
+        if (receivedItem != null)
+        {
+            Debug.Log($"Selected item: {receivedItem.name}");
+        }
+        else
+        {
+            Debug.Log("No item selected.");
+        }
+    }
+
+
 }

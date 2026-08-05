@@ -1,16 +1,13 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Outline))]
-
 public abstract class BaseInteractable : MonoBehaviour, IInteractable
 {
     [Header("Highlight Effect Settings")]
     protected Outline outline;
 
     protected bool isFocused = false;
-
-    public string interactionPromptText;
+    public string overrideInteractionPromptText;
 
 
 
@@ -22,16 +19,18 @@ public abstract class BaseInteractable : MonoBehaviour, IInteractable
         }
 
         #region Initalize Hightlight Effect
+        // Outline commonly lives on a child "Mesh" sub-object rather than the root (which owns the Collider).
         outline = GetComponent<Outline>();
         outline.OutlineColor = Color.green;
-        outline.OutlineWidth = 10f;
+        outline.OutlineWidth = 5f;
         outline.enabled = false;
+        outline.PrecomputeOutline = true;
         #endregion
     }
 
-    public string GetInteractionPrompt()
+    public virtual string GetInteractionPrompt()
     {
-        throw new System.NotImplementedException();
+        return overrideInteractionPromptText;
     }
 
     public virtual void OnInteract()
@@ -52,9 +51,12 @@ public abstract class BaseInteractable : MonoBehaviour, IInteractable
            outline.enabled = true;
         }
         else
-        {
+        { 
+            if(outline != null)
+            {
             // Lose focus logic
             outline.enabled = false;
+            }
         }
     }
 

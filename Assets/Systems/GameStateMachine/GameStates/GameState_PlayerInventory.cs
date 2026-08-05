@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class GameState_PlayerInventory : IState
 {
@@ -7,6 +10,7 @@ public class GameState_PlayerInventory : IState
     PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
     InputManager inputManager => InputManager.Instance;
+    InventoryManager inventoryManager => InventoryManager.Instance;
 
     #region Singleton Instance
     // A single, readonly instance of the atate class is created.
@@ -24,7 +28,7 @@ public class GameState_PlayerInventory : IState
     {
         //Debug.Log("Entered Main Menu State");
 
-        Time.timeScale = 0f; // Pause the game
+        Time.timeScale = 1f; // Pause the game
 
         Cursor.visible = true;
 
@@ -32,13 +36,43 @@ public class GameState_PlayerInventory : IState
 
         // Subscribe to necessary input events
         inputManager.OnInventoryInputEvent += HandleInventoryInput;
+        inputManager.InventoryInteractInputEvent += HandleInventoryInteractInput;
 
 
     }
 
-    private void HandleInventoryInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void HandleInventoryInput(InputAction.CallbackContext context)
     {
         gameStateManager.SwitchToState(GameState_Gameplay.Instance);
+    }
+
+    // Clicking anywhere that isn't a slot/UI element while holding an item drops it into the world.
+    // Fires on both press (Performed) and release (Canceled) - DropItem() self-guards on heldItem == null,
+    // so this is safe: whichever phase happens to catch a valid drop does it, the other is a no-op.
+    // Uses its own InventoryInteract action (separate from the world "Interact" action) so left click
+    // can later be repurposed (e.g. an attack) in GameState_Gameplay without affecting this.
+    private void HandleInventoryInteractInput(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed && context.phase != InputActionPhase.Canceled) return;
+        if (IsPointerOverUI()) return;
+
+        Debug.Log("Dropping item from inventory into the world");
+        inventoryManager.DropItem();
+    }
+
+    // EventSystem.current.IsPointerOverGameObject() (no args) relies on a pointer-id convention that
+    // isn't reliable with InputSystemUIInputModule, so raycast explicitly against the current mouse position instead.
+    private bool IsPointerOverUI()
+    {
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+
+        return results.Count > 0;
     }
 
     public void FixedUpdateState()
@@ -61,6 +95,7 @@ public class GameState_PlayerInventory : IState
     public void ExitState()
     {
         //Debug.Log("Exiting Main Menu State");
+        inputManager.InventoryInteractInputEvent -= HandleInventoryInteractInput;
     }
 
 }

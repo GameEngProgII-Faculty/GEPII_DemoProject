@@ -3,10 +3,10 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 
-    
+
 
     [Header("UI")]
     public Image image;
@@ -14,7 +14,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     [HideInInspector] public Item item;
     [HideInInspector] public int count = 1;
-    [HideInInspector] public Transform parentAfterDrag;
 
     public UIManager uIManager;
 
@@ -41,27 +40,23 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
 
 
-    // Drag and Drop functionality
-    public void OnBeginDrag(PointerEventData eventData)
+    // Tooltip on hover
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        image.raycastTarget = false;
-        parentAfterDrag = transform.parent;
-        transform.SetParent(UIManager.Instance.rootCanvas.transform);
-        transform.SetAsLastSibling();
+        uIManager.ShowItemTooltip(item, (RectTransform)transform);
     }
 
-    public void OnDrag(PointerEventData eventData)
+    public void OnPointerExit(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition;
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        image.raycastTarget = true;
-        transform.SetParent(parentAfterDrag);
-
+        uIManager.HideItemTooltip();
     }
 
 
+    // Registers this item as an active Unity drag so InventorySlot.OnDrop fires on release.
+    // Pickup itself already happened via InventorySlot.OnPointerDown; InventoryManager.Update()
+    // already follows the cursor, so these don't need to do anything themselves.
+    public void OnBeginDrag(PointerEventData eventData) { }
+    public void OnDrag(PointerEventData eventData) { }
+    public void OnEndDrag(PointerEventData eventData) { }
 
 }

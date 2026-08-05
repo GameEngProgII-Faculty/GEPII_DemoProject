@@ -10,6 +10,7 @@ public class Item : ScriptableObject
 
     [Header("Only UI")]
     public bool stackable = true;
+    [TextArea] public string description;
 
     [Header("Both")]
     public Sprite icon;
