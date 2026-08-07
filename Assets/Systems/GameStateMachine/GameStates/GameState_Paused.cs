@@ -6,6 +6,7 @@ public class GameState_Paused : IState
     GameStateManager gameStateManager => GameStateManager.Instance;
     PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
+    InputManager inputManager => InputManager.Instance;
 
     #region Singleton Instance
     // A single, readonly instance of the atate class is created.
@@ -28,10 +29,6 @@ public class GameState_Paused : IState
         Cursor.visible = true;
 
         uIManager.ShowPauseMenu();
-
-
-
-
     }
 
     public void FixedUpdateState()
@@ -41,12 +38,7 @@ public class GameState_Paused : IState
 
     public void UpdateState()
     {
-        //Debug.Log("Running MainMenu Update State");
-
-        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
-        {
-            gameStateManager.Resume();  
-        }
+  
     }
 
     public void LateUpdateState()
@@ -57,6 +49,8 @@ public class GameState_Paused : IState
     public void ExitState()
     {
         //Debug.Log("Exiting Main Menu State");
+
     }
+
 
 }

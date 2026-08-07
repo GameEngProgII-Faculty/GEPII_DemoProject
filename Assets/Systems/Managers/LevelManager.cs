@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,12 +10,16 @@ public class LevelManager : MonoBehaviour
     // Static singleton instance
     public static LevelManager Instance { get; private set; }
 
+    // Fired after a gameplay scene finishes loading, carrying the spawnpoint id to move to.
+    // LevelManager doesn't need to know PlayerController exists - anything that cares about
+    // "a gameplay scene just loaded" (player positioning, spawners, save/load, etc.) can subscribe.
+    public event Action<string> OnGameplaySceneLoaded;
+
     // Temp storage used by LoadNextLevel() to calculate which build index to load next.
     private int nextScene;
 
     // Cached shortcut references to other managers.
     GameStateManager gameStateManager => GameStateManager.Instance;
-    PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
 
     LoadingUIController loadingUIController => UIManager.Instance.loadingUIController;
@@ -273,10 +278,10 @@ public class LevelManager : MonoBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Only move the player if this is a gameplay scene
+        // Only notify for gameplay scenes
         if (scene.buildIndex > MAIN_MENU_SCENE)
         {
-            playerController.MovePlayerToSpawnpoint("StartPosition");
+            OnGameplaySceneLoaded?.Invoke("StartPosition");
         }
 
         SceneManager.sceneLoaded -= OnSceneLoaded;

@@ -844,16 +844,28 @@ PrefabInstance:
       value: Axe
       objectReference: {fileID: 0}
     - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.6854922
+      value: 1.803
       objectReference: {fileID: 0}
     - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.000000044244075
+      value: 0.27
       objectReference: {fileID: 0}
     - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10.280786
+      value: 0.153
       objectReference: {fileID: 0}
     - target: {fileID: 6597226749435510821, guid: 650075dbc4b79954da9e82ff883667d2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5589,9 +5601,33 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: woodChopVFX
+      value: 
+      objectReference: {fileID: 1904563444467704815, guid: 836cdafe6e2f571499c7d48e3c88ac0f, type: 3}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
       propertyPath: requiredTool
       value: 
       objectReference: {fileID: 11400000, guid: 3655da9a4928207489b6216274720be3, type: 2}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: woodChopClips.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: 'woodChopClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 2adf957d8b90c3f46bdc541ddb489c52, type: 3}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: 'woodChopClips.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 4a7c4dfb1c78c84418f88daea0fde75c, type: 3}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: 'woodChopClips.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: b98fadb19a21ea746a006a2c3adbce38, type: 3}
+    - target: {fileID: 2567350651304204496, guid: 99852424e6820f14d839c4599a888e12, type: 3}
+      propertyPath: 'woodChopClips.Array.data[3]'
+      value: 
+      objectReference: {fileID: 8300000, guid: f3ce15a83d34b0143b28d13b8c2bf2db, type: 3}
     - target: {fileID: 3587047373842192415, guid: 99852424e6820f14d839c4599a888e12, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.979

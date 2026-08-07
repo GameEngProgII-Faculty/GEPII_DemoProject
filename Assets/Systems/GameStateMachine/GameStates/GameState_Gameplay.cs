@@ -38,14 +38,12 @@ public class GameState_Gameplay : IState
         Time.timeScale = 1f; // Resume  
         
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
 
         uIManager.ShowGameplayUI();
 
 
         // Subscribe to necessary input events
-        inputManager.OnPauseInputEvent += HandlePauseInput;
-        inputManager.OnInventoryInputEvent += HandleInventoryInput;
-
         inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
         inputManager.OnToolbarScrollInputEvent += HandleToolbarScrollInput;
         inputManager.UseToolInputEvent += HandleUseToolInput;
@@ -70,23 +68,16 @@ public class GameState_Gameplay : IState
 
     public void ExitState()
     {
+        Cursor.lockState = CursorLockMode.None;
+
         // Ususcribe from Input events
-        inputManager.OnPauseInputEvent -= HandlePauseInput;
-        inputManager.OnInventoryInputEvent -= HandleInventoryInput;
+        inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
         inputManager.OnToolbarScrollInputEvent -= HandleToolbarScrollInput;
         inputManager.UseToolInputEvent -= HandleUseToolInput;
     }
 
 
-    private void HandleInventoryInput(InputAction.CallbackContext context)
-    {
-        gameStateManager.SwitchToState(GameState_PlayerInventory.Instance);
-    }
 
-    private void HandlePauseInput(InputAction.CallbackContext context)
-    {
-        gameStateManager.Pause();
-    }
 
     private void HandleToolbarSlotInput(InputAction.CallbackContext context, int inputID)
     {

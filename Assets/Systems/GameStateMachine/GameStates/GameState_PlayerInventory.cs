@@ -35,15 +35,9 @@ public class GameState_PlayerInventory : IState
         uIManager.ShowPlayerInventory();
 
         // Subscribe to necessary input events
-        inputManager.OnInventoryInputEvent += HandleInventoryInput;
         inputManager.InventoryInteractInputEvent += HandleInventoryInteractInput;
 
 
-    }
-
-    private void HandleInventoryInput(InputAction.CallbackContext context)
-    {
-        gameStateManager.SwitchToState(GameState_Gameplay.Instance);
     }
 
     // Clicking anywhere that isn't a slot/UI element while holding an item drops it into the world.

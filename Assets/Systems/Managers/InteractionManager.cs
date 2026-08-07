@@ -50,13 +50,24 @@ public class InteractionManager : MonoBehaviour
 
         #endregion
 
-        Debug.Log($"{GetType().Name}: Initialized");
+        //Debug.Log($"{GetType().Name}: Initialized");
     }
 
     private void Start()
     {
         cameraRoot = PlayerController.Instance.CameraRoot;
         initialized = cameraRoot != null;
+
+        InventoryManager.Instance.OnSelectedSlotChanged += HandleSelectedSlotChanged;
+    }
+
+    // Re-evaluate the prompt when the equipped tool changes (e.g. a required-tool interactable's
+    // prompt needs to flip from "Requires Axe" to "[LMB] Harvest Wood" without the focus changing).
+    private void HandleSelectedSlotChanged(int slotIndex)
+    {
+        if (currentFocusedInteractable == null) return;
+
+        UIManager.Instance.ShowInteractPrompt(currentFocusedInteractable.GetInteractionPrompt());
     }
 
 
@@ -136,6 +147,11 @@ public class InteractionManager : MonoBehaviour
     private void OnDestroy()
     {
         inputManager.InteractInputEvent -= OnInteractInput;
+
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnSelectedSlotChanged -= HandleSelectedSlotChanged;
+        }
     }
 
 

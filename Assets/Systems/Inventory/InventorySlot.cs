@@ -8,11 +8,6 @@ public class InventorySlot : MonoBehaviour, IPointerDownHandler, IDropHandler
     public Image image;
     public Color selectedColor, notSelectedColor;
 
-    public void Awake()
-    {
-        DeSelect();
-    }
-
     public void Select()
     {
         image.color = selectedColor;

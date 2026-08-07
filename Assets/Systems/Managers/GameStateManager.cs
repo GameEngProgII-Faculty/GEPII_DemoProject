@@ -1,7 +1,5 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class GameStateManager : MonoBehaviour
 {
@@ -14,6 +12,9 @@ public class GameStateManager : MonoBehaviour
     [Header("Debug (read only)")]
     [SerializeField] private string currentActiveState;
     [SerializeField] private string lastActiveState;
+
+    // Cached shortcut references
+    InputManager inputManager => InputManager.Instance;
 
     // Private variables to store state information
     private IState currentState;  // Current active state
@@ -48,7 +49,22 @@ public class GameStateManager : MonoBehaviour
         currentState = gameState_BootLoad;
         currentActiveState = currentState.ToString();
         currentState.EnterState();
+    }
 
+    private void Start()
+    {
+        if (inputManager == null) Debug.Log("ERRRRRRRRR");
+
+        // Subscribe to necessary input events
+        inputManager.OnPauseInputEvent += HandlePauseInput;
+        inputManager.OnInventoryInputEvent += HandleInventoryInput;
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from necessary input events
+        inputManager.OnPauseInputEvent -= HandlePauseInput;
+        inputManager.OnInventoryInputEvent -= HandleInventoryInput;
     }
 
     public void SwitchToState(IState newState)
@@ -65,17 +81,12 @@ public class GameStateManager : MonoBehaviour
     }
 
 
-
-
-
-
     #region State Machine Update Calls
 
     private void FixedUpdate()
     {
         // Handle physics updates in the current active state
         currentState.FixedUpdateState();
-
     }
 
 
@@ -91,6 +102,46 @@ public class GameStateManager : MonoBehaviour
         // Handle late frame updates in the current active state
         currentState.LateUpdateState();
     }
+    #endregion
+
+
+    #region Input Handling
+
+    private void HandlePauseInput(InputAction.CallbackContext context)
+    {
+        // ignore input for anything except context.Performed
+        if (context.phase != InputActionPhase.Performed) return;
+
+
+        if (currentState == gameState_Gameplay)
+        {
+            SwitchToState(gameState_Paused);
+        }
+        else if (currentState == gameState_Paused)
+        {
+            SwitchToState(gameState_Gameplay);
+        }
+    }
+
+    private void HandleInventoryInput(InputAction.CallbackContext context)
+    {
+        // ignore input for anything except context.Performed
+        if (context.phase != InputActionPhase.Performed) return;
+
+
+        if (currentState == gameState_Gameplay)
+        {
+            SwitchToState(gameState_PlayerInventory);
+        }
+        else if (currentState == gameState_PlayerInventory)
+        {
+            SwitchToState(gameState_Gameplay);
+        }
+    }
+
+
+
+
     #endregion
 
     #region Button Call Methods
@@ -133,15 +184,13 @@ public class GameStateManager : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
-
     }
 
 
 
-
-
-
     #endregion
+
+
 
 
 }

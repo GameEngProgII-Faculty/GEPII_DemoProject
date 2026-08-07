@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -12,7 +13,10 @@ public class InventoryManager : MonoBehaviour
     public InventorySlot[] backpackSlots;
     public GameObject inventoryItemPrefab;
 
-    [SerializeField] private GameObject toolbarSelector;
+    // Fired whenever the selected toolbar slot changes (number key, scroll, or click), carrying the
+    // new slot index. Anything that cares what tool/item is currently equipped can subscribe instead
+    // of InventoryManager needing to know about it directly.
+    public event Action<int> OnSelectedSlotChanged;
 
     [Header("Drop Offset")]
     [SerializeField] private float dropDistance = 0.5f;
@@ -42,6 +46,19 @@ public class InventoryManager : MonoBehaviour
         #endregion
     }
 
+    private void Start()
+    {
+        UIManager.Instance.OnToolbarPanelShown += OnToolbarShown;
+    }
+
+    private void OnDestroy()
+    {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.OnToolbarPanelShown -= OnToolbarShown;
+        }
+    }
+
     private void Update()
     {
         // Held item follows the cursor until it's placed in a slot
@@ -52,11 +69,17 @@ public class InventoryManager : MonoBehaviour
     }
 
 
-    // this is a fix to a timing issue where the toolbarSelector is not positioned correctly when the toolbar is first shown
-    // called when the UIManager first shows the toolbar
+    // Called whenever the toolbar panel is shown (gameplay HUD or full inventory screen).
+    // InventoryManager is the sole writer of slot color state, so every slot is explicitly
+    // deselected here before selecting - no reliance on each slot's own Awake running before
+    // or after this, which was the source of the color not sticking on the very first frame
+    // the toolbar appeared.
     public void OnToolbarShown()
     {
-        Canvas.ForceUpdateCanvases();
+        foreach (InventorySlot slot in toolbarSlots)
+        {
+            slot.DeSelect();
+        }
 
         // Keep whatever was previously selected; only default to slot 0 the first time.
         int slotToSelect = selectedSlot >= 0 ? selectedSlot : 0;
@@ -73,15 +96,7 @@ public class InventoryManager : MonoBehaviour
         toolbarSlots[newValue].Select(); // Select the new slot
         selectedSlot = newValue; // Update the selected slot index
 
-        // Move toolbarSelector to the new selected slot
-        if (newValue >= 0 && newValue < toolbarSlots.Length)
-        {
-            RectTransform selectorRT = toolbarSelector.GetComponent<RectTransform>();
-            RectTransform slotRT = toolbarSlots[newValue].GetComponent<RectTransform>();
-            selectorRT.position = slotRT.position; // still works if same canvas
-
-            Debug.Log($"Selected slot changed to {newValue}. Selector moved to {slotRT.position}");
-        }
+        OnSelectedSlotChanged?.Invoke(selectedSlot);
     }
 
     // Moves the selected slot by +1/-1 with wraparound, e.g. for mouse scroll wheel input
@@ -89,8 +104,8 @@ public class InventoryManager : MonoBehaviour
     {
         if (toolbarSlots == null || toolbarSlots.Length == 0) return;
 
-        int newIndex = ((selectedSlot + direction) % toolbarSlots.Length + toolbarSlots.Length) % toolbarSlots.Length;
-        ChangeSelectedSlot(newIndex);
+        int newSlot = ((selectedSlot + direction) % toolbarSlots.Length + toolbarSlots.Length) % toolbarSlots.Length;
+        ChangeSelectedSlot(newSlot);
     }
 
 
@@ -153,6 +168,10 @@ public class InventoryManager : MonoBehaviour
     // Click-to-pick-up / click-to-place slot interaction (Valheim-style)
     public void SlotClicked(InventorySlot slot)
     {
+        // Clicking a toolbar slot also selects it, same as scrolling or pressing its number key.
+        int toolbarIndex = Array.IndexOf(toolbarSlots, slot);
+        if (toolbarIndex >= 0) ChangeSelectedSlot(toolbarIndex);
+
         if (heldItem == null)
         {
             TryPickUpItem(slot);

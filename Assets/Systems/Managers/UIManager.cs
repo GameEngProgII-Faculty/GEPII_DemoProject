@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class UIManager : MonoBehaviour
 
     // Name property for IManager interface implementation
     public string Name => GetType().Name;
+
+    // Fired whenever the toolbar panel is shown (gameplay HUD or full inventory screen).
+    // Other managers subscribe instead of UIManager calling them directly.
+    public event Action OnToolbarPanelShown;
 
     public Canvas rootCanvas;
 
@@ -72,6 +77,7 @@ public class UIManager : MonoBehaviour
     {
         HideAllUIMenus();
         pausePanel.SetActive(true);
+        toolbarPanel.SetActive(true);
     }
 
     public void ShowGameplayUI()
@@ -79,7 +85,7 @@ public class UIManager : MonoBehaviour
         HideAllUIMenus();
         gameplayPanel.SetActive(true);
         toolbarPanel.SetActive(true);
-        InventoryManager.Instance.OnToolbarShown();
+        OnToolbarPanelShown?.Invoke();
     }
 
     public void ShowLoadingScreenUI()
@@ -95,7 +101,7 @@ public class UIManager : MonoBehaviour
         toolbarPanel.SetActive(true);
         darkeningPanel.SetActive(true);
         gameplayPanel.SetActive(true);
-        InventoryManager.Instance.OnToolbarShown();
+        OnToolbarPanelShown?.Invoke();
     }
 
 

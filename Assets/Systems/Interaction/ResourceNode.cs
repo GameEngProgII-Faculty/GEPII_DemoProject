@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 [RequireComponent(typeof(Outline))]
 public class ResourceNode : BaseInteractable
@@ -6,6 +7,13 @@ public class ResourceNode : BaseInteractable
     [SerializeField] private Item item;
     [SerializeField] private Item requiredTool;
     [SerializeField] private int HitPoints = 3;
+
+    AudioManager audioManager => AudioManager.Instance;
+
+    [SerializeField] AudioClip[] woodChopClips;
+
+    [SerializeField] ParticleSystem woodChopVFX;
+
 
     public override string GetInteractionPrompt()
     {
@@ -31,8 +39,19 @@ public class ResourceNode : BaseInteractable
             return;
         }
 
-        // Play Attack animation
-        // Play Attack sound
+        // TODO Play SWING AXE animation
+
+        PlaySFX();
+
+         
+
+
+
+
+        // Play Particle system
+        Instantiate(woodChopVFX);
+
+
         // Subtract hit points from the resource node (based on tool's damage value)
         HitPoints--;  // placeholder
 
@@ -53,4 +72,22 @@ public class ResourceNode : BaseInteractable
             }
         }
     }
+
+    private void PlaySFX()
+    {
+        if (woodChopClips == null || woodChopClips.Length == 0)
+        {
+            Debug.LogWarning("No sound effects assigned to the array!");
+            return;
+        }
+
+        // 1. Pick a random clip
+        int randomIndex = Random.Range(0, woodChopClips.Length);
+        AudioClip clipToPlay = woodChopClips[randomIndex];
+
+
+        // 2. Play the sound effect
+        audioManager.PlayTempSFX(clipToPlay);
+    }
+
 }
