@@ -10,9 +10,17 @@ public class ResourceNode : BaseInteractable
 
     AudioManager audioManager => AudioManager.Instance;
 
-    [SerializeField] AudioClip[] woodChopClips;
+    [SerializeField] AudioClip[] audioClips;
 
-    [SerializeField] ParticleSystem woodChopVFX;
+    [SerializeField] GameObject harvestVFXPrefab;
+
+    [SerializeField] int minAmount = 1;
+    [SerializeField] int maxAmount = 3;
+
+    // TODO:
+    // - Play a different VFX when the resource node runs out of HP
+    // - Play a different SFX when the resource node runs out of HP
+    // - Match position of harvestVFXPrefab to cursor position on object (likely through a raycast)
 
 
     public override string GetInteractionPrompt()
@@ -40,17 +48,15 @@ public class ResourceNode : BaseInteractable
         }
 
         // TODO Play SWING AXE animation
-
         PlaySFX();
-
-         
-
-
 
 
         // Play Particle system
-        Instantiate(woodChopVFX);
-
+        // TODO: Eventually change VFX spawnPosition to match the strike position (likely using a raycast)
+        GameObject vfx = Instantiate(harvestVFXPrefab, transform);
+        vfx.transform.localPosition = Vector3.zero;
+        vfx.transform.localRotation = Quaternion.identity;   
+     
 
         // Subtract hit points from the resource node (based on tool's damage value)
         HitPoints--;  // placeholder
@@ -58,7 +64,10 @@ public class ResourceNode : BaseInteractable
         // check if hit points are zero or less, if so, add the item to the player's inventory and destroy the resource node
         if (HitPoints <= 0)
         {
-            int added = InventoryManager.Instance.AddItemsToInventory(item, 1);
+            int amountToAdd = Random.Range(minAmount, maxAmount);
+
+
+            int added = InventoryManager.Instance.AddItemsToInventory(item, amountToAdd);
             if (added > 0)
             {
                 Debug.Log($"Harvested {item.name} from resource node");
@@ -75,15 +84,15 @@ public class ResourceNode : BaseInteractable
 
     private void PlaySFX()
     {
-        if (woodChopClips == null || woodChopClips.Length == 0)
+        if (audioClips == null || audioClips.Length == 0)
         {
             Debug.LogWarning("No sound effects assigned to the array!");
             return;
         }
 
         // 1. Pick a random clip
-        int randomIndex = Random.Range(0, woodChopClips.Length);
-        AudioClip clipToPlay = woodChopClips[randomIndex];
+        int randomIndex = Random.Range(0, audioClips.Length);
+        AudioClip clipToPlay = audioClips[randomIndex];
 
 
         // 2. Play the sound effect

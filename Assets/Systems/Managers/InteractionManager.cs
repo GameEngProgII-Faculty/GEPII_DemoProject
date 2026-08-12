@@ -129,7 +129,9 @@ public class InteractionManager : MonoBehaviour
 
         if (context.performed)
         {
-            if (currentFocusedInteractable != null)
+            // ResourceNodes only respond to the left-click "use tool" action (see
+            // GameState_Gameplay.HandleUseToolInput) - the standard Interact (E) button doesn't apply.
+            if (currentFocusedInteractable != null && currentFocusedInteractable is not ResourceNode)
             {
                 currentFocusedInteractable.OnInteract();
             }
