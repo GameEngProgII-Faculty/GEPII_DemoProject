@@ -23,12 +23,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameplayPanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject loadingScreenPanel;
-
-
-    [Header("Inventory UI")]
-    [SerializeField] private GameObject darkeningPanel;
     [SerializeField] private GameObject toolbarPanel;
     [SerializeField] private GameObject backpackPanel;
+    [SerializeField] private GameObject containerPanel;
+    [SerializeField] private GameObject darkeningPanel;
+
+
+
+    [Header("Inventory")]
+    [SerializeField] private Transform containerSlots;
+    [SerializeField] private GameObject slotPrefab;
+
 
     [Header("InteractPrompt")]
     [SerializeField] private TextMeshProUGUI interactPromptText;
@@ -67,6 +72,8 @@ public class UIManager : MonoBehaviour
         UpdateTooltipPosition();
     }
 
+
+    #region ShowHide UI Panels
     public void ShowMainMenu()
     {
         HideAllUIMenus();
@@ -82,6 +89,8 @@ public class UIManager : MonoBehaviour
 
     public void ShowGameplayUI()
     {
+        Debug.Log("ShowGameplayUI");
+
         HideAllUIMenus();
         gameplayPanel.SetActive(true);
         toolbarPanel.SetActive(true);
@@ -94,7 +103,7 @@ public class UIManager : MonoBehaviour
         loadingScreenPanel.SetActive(true);
     }
 
-    public void ShowPlayerInventory()
+    public void ShowPlayerBackpack()
     {
         HideAllUIMenus();
         backpackPanel.SetActive(true);
@@ -104,12 +113,28 @@ public class UIManager : MonoBehaviour
         OnToolbarPanelShown?.Invoke();
     }
 
+    public void ShowInventoryContainer(int slotCount)
+    {
+        HideAllUIMenus();  
+        
+        toolbarPanel.SetActive(true);
+        gameplayPanel.SetActive(true);
+        backpackPanel.SetActive(true);
+        containerPanel.SetActive(true);
+        darkeningPanel.SetActive(true);
+
+        OnToolbarPanelShown?.Invoke();
+        BuildInventoryContainer(slotCount);
+    }
+
 
 
 
 
     public void HideAllUIMenus()
     {
+        Debug.Log("Hide all UI Panels");
+
         if (mainMenuPanel == null) Debug.LogError("mainMenuPanel is null, please check the UIManager setup.");
         if (pausePanel == null) Debug.LogError("pausePanel is null, please check the UIManager setup.");
         if (gameplayPanel == null) Debug.LogError("gameplayPanel is null, please check the UIManager setup.");
@@ -120,11 +145,37 @@ public class UIManager : MonoBehaviour
         pausePanel.SetActive(false);
         loadingScreenPanel.SetActive(false);
         toolbarPanel.SetActive(false);
-        backpackPanel.SetActive(false);
+        backpackPanel.SetActive(false); 
+        containerPanel.SetActive(false);
         darkeningPanel.SetActive(false);
     }
 
+    #endregion
 
+
+    #region Inventory Container UI
+
+    public void BuildInventoryContainer(int slotCount)     
+    {
+        ClearContainer();
+
+        for (int i = 0; i < slotCount; i++)
+        {
+            Instantiate(slotPrefab, containerSlots.transform);
+        }
+    }
+
+    void ClearContainer()
+    {
+        // Loop backwards through the children to safely delete them
+        for (int i = containerSlots.childCount - 1; i >= 0; i--)
+        {
+            GameObject child = containerSlots.GetChild(i).gameObject;
+            Destroy(child);
+        }
+    }
+
+    #endregion
 
 
 

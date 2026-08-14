@@ -32,7 +32,7 @@ public class GameState_PlayerInventory : IState
 
         Cursor.visible = true;
 
-        uIManager.ShowPlayerInventory();
+        uIManager.ShowPlayerBackpack();
 
         // Subscribe to necessary input events
         inputManager.InventoryInteractInputEvent += HandleInventoryInteractInput;

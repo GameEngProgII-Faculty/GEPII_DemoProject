@@ -86,6 +86,20 @@ public class InventoryManager : MonoBehaviour
         ChangeSelectedSlot(slotToSelect);
     }
 
+    public void OpenContainer(int slotCount)
+    {
+        // Get Container Size
+
+        // Based on Type and Size open UI and Loadamount of slots needed
+
+        UIManager.Instance.ShowInventoryContainer(slotCount);
+
+        // then populate contents.
+
+
+
+    }
+
     public void ChangeSelectedSlot(int newValue)
     {
         if (selectedSlot >= 0)
