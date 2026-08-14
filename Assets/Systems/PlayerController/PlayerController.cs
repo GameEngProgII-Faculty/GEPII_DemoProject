@@ -134,6 +134,8 @@ public class PlayerController : MonoBehaviour
     {
         Initialize();
         Debug.Log($"{GetType().Name}: Initialized");
+
+        LevelManager.Instance.OnGameplaySceneLoaded += MovePlayerToSpawnpoint;
     }
 
     void Initialize()
@@ -165,7 +167,7 @@ public class PlayerController : MonoBehaviour
 
     public void HandlePlayerMovement()
     {
-        Debug.Log($"HandlePlayerMovement: MoveX = {moveInput.x} ,MoveY = {moveInput.y}");
+        // Debug.Log($"HandlePlayerMovement: MoveX = {moveInput.x} ,MoveY = {moveInput.y}");
 
         characterVelocity = characterController.velocity.magnitude;
         if (moveEnabled == false) return; // Check if movement is enabled
@@ -596,7 +598,7 @@ public class PlayerController : MonoBehaviour
 
         if (spawnpoint == null)
         {
-            Debug.LogWarning($"No PlayerSpawnpoint found in scene '{SceneManager.GetActiveScene().name}' — skipping player move.");
+            Debug.LogWarning($"No PlayerSpawnpoint found in scene '{SceneManager.GetActiveScene().name}' â€” skipping player move.");
             return;
         }
 
@@ -638,6 +640,11 @@ public class PlayerController : MonoBehaviour
         inputManager.JumpInputEvent -= HandleJumpInput;
         inputManager.CrouchInputEvent -= HandleCrouchInput;
         inputManager.SprintInputEvent -= HandleSprintInput;
+
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.OnGameplaySceneLoaded -= MovePlayerToSpawnpoint;
+        }
     }
 
 }

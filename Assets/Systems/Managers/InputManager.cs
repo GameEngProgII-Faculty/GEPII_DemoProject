@@ -34,6 +34,20 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     public event Action<InputAction.CallbackContext> CrouchInputEvent;
     public event Action<InputAction.CallbackContext> InteractInputEvent;
     public event Action<InputAction.CallbackContext> SprintInputEvent;
+    public event Action<InputAction.CallbackContext> OnInventoryInputEvent;
+    public event Action<InputAction.CallbackContext> OnPauseInputEvent;
+
+
+    // Toolbar Slot Selection Inputs
+    public event Action<InputAction.CallbackContext, int> OnToolbarSlotInputEvent;
+    public event Action<InputAction.CallbackContext> OnToolbarScrollInputEvent;
+
+    // Inventory-only pickup/place/drop input, separate from the world "Interact" action
+    public event Action<InputAction.CallbackContext> InventoryInteractInputEvent;
+
+    // Left-click "use held tool on whatever's focused" input, e.g. mining a ResourceNode
+    public event Action<InputAction.CallbackContext> UseToolInputEvent;
+
 
     #endregion
 
@@ -99,6 +113,27 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     // Called by the Input System when the sprint action state changes.
     // Triggers SprintInputEvent and forwards the action state context to all subscribers.
     public void OnSprint(InputAction.CallbackContext context) => SprintInputEvent?.Invoke(context);
+
+    public void OnInventory(InputAction.CallbackContext context) => OnInventoryInputEvent?.Invoke(context);
+
+    public void OnPause(InputAction.CallbackContext context) => OnPauseInputEvent?.Invoke(context);
+
+
+    // === Toolbar Select Inputs ===
+
+    public void OnToolbarSlot1(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 1);
+    public void OnToolbarSlot2(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 2);
+    public void OnToolbarSlot3(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 3);
+    public void OnToolbarSlot4(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 4);
+    public void OnToolbarSlot5(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 5);
+    public void OnToolbarSlot6(InputAction.CallbackContext context) => OnToolbarSlotInputEvent?.Invoke(context, 6);
+
+    public void OnToolbarScroll(InputAction.CallbackContext context) => OnToolbarScrollInputEvent?.Invoke(context);
+
+    public void OnInventoryInteract(InputAction.CallbackContext context) => InventoryInteractInputEvent?.Invoke(context);
+
+    public void OnUseTool(InputAction.CallbackContext context) => UseToolInputEvent?.Invoke(context);
+
 
     #endregion
 

@@ -1,11 +1,17 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameState_Gameplay : IState
 {
+
+    // Cached shortcut references
     GameStateManager gameStateManager => GameStateManager.Instance;
     PlayerController playerController => PlayerController.Instance;
     UIManager uIManager => UIManager.Instance;
+    InputManager inputManager => InputManager.Instance;
+    InventoryManager inventoryManager => InventoryManager.Instance;
+    InteractionManager interactionManager => InteractionManager.Instance;
 
 
 
@@ -23,6 +29,7 @@ public class GameState_Gameplay : IState
     #endregion
 
 
+   
 
     public void EnterState()
     {
@@ -31,12 +38,18 @@ public class GameState_Gameplay : IState
         Time.timeScale = 1f; // Resume  
         
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
 
         uIManager.ShowGameplayUI();
 
 
+        // Subscribe to necessary input events
+        inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
+        inputManager.OnToolbarScrollInputEvent += HandleToolbarScrollInput;
+        inputManager.UseToolInputEvent += HandleUseToolInput;
 
     }
+
 
     public void FixedUpdateState()
     {
@@ -46,20 +59,6 @@ public class GameState_Gameplay : IState
     public void UpdateState()
     {
         playerController.HandlePlayerMovement();
-
-        // Debug.Log("Running Gameplay Update State");
-
-
-        if (Keyboard.current[Key.Escape].wasPressedThisFrame)
-        {
-            gameStateManager.Pause();
-        }
-
-
-
-
-
-
     }
 
     public void LateUpdateState()
@@ -69,7 +68,45 @@ public class GameState_Gameplay : IState
 
     public void ExitState()
     {
-        //Debug.Log("Exiting gameplay State");
+        Cursor.lockState = CursorLockMode.None;
+
+        // Ususcribe from Input events
+        inputManager.OnToolbarSlotInputEvent += HandleToolbarSlotInput;
+        inputManager.OnToolbarScrollInputEvent -= HandleToolbarScrollInput;
+        inputManager.UseToolInputEvent -= HandleUseToolInput;
     }
+
+
+
+
+    private void HandleToolbarSlotInput(InputAction.CallbackContext context, int inputID)
+    {
+        inventoryManager.ChangeSelectedSlot(inputID - 1);
+    }
+
+    private void HandleToolbarScrollInput(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+
+        float scrollValue = context.ReadValue<float>();
+        if (scrollValue == 0f) return;
+
+        // Scroll up selects the previous slot, scroll down selects the next slot
+        int direction = scrollValue > 0f ? -1 : 1;
+        inventoryManager.ScrollSelectedSlot(direction);
+    }
+
+    // Left click: only ResourceNodes respond to this (with their own required-tool check).
+    // Other interactables (pickups, etc.) stay on the "Interact" (E) action via InteractionManager.
+    private void HandleUseToolInput(InputAction.CallbackContext context)
+    {
+        if (context.phase != InputActionPhase.Performed) return;
+
+        if (interactionManager.CurrentFocusedInteractable is ResourceNode resourceNode)
+        {
+            resourceNode.OnInteract();
+        }
+    }
+
 
 }

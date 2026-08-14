@@ -1,7 +1,5 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 
 public class GameStateManager : MonoBehaviour
 {
@@ -15,6 +13,9 @@ public class GameStateManager : MonoBehaviour
     [SerializeField] private string currentActiveState;
     [SerializeField] private string lastActiveState;
 
+    // Cached shortcut references
+    InputManager inputManager => InputManager.Instance;
+
     // Private variables to store state information
     private IState currentState;  // Current active state
     private IState lastState;     // Last active state (kept private for encapsulation)
@@ -25,6 +26,7 @@ public class GameStateManager : MonoBehaviour
     GameState_Paused gameState_Paused => GameState_Paused.Instance;
     GameState_BootLoad gameState_BootLoad => GameState_BootLoad.Instance;
     GameState_Loading gameState_Loading => GameState_Loading.Instance;
+    GameState_PlayerInventory gameState_PlayerInventory => GameState_PlayerInventory.Instance;
 
     private void Awake()
     {
@@ -47,11 +49,29 @@ public class GameStateManager : MonoBehaviour
         currentState = gameState_BootLoad;
         currentActiveState = currentState.ToString();
         currentState.EnterState();
+    }
 
+    private void Start()
+    {
+        if (inputManager == null) Debug.Log("ERRRRRRRRR");
+
+        // Subscribe to necessary input events
+        inputManager.OnPauseInputEvent += HandlePauseInput;
+        inputManager.OnInventoryInputEvent += HandleInventoryInput;
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from necessary input events
+        inputManager.OnPauseInputEvent -= HandlePauseInput;
+        inputManager.OnInventoryInputEvent -= HandleInventoryInput;
     }
 
     public void SwitchToState(IState newState)
     {
+        Debug.Log($"Switching from {lastActiveState} to {currentActiveState}");
+
+
         lastState = currentState; // Store the current state as the last state
         lastActiveState = lastState.ToString(); // Update debug info in inspector
         currentState?.ExitState(); // Exit the current state
@@ -64,17 +84,12 @@ public class GameStateManager : MonoBehaviour
     }
 
 
-
-
-
-
     #region State Machine Update Calls
 
     private void FixedUpdate()
     {
         // Handle physics updates in the current active state
         currentState.FixedUpdateState();
-
     }
 
 
@@ -90,6 +105,46 @@ public class GameStateManager : MonoBehaviour
         // Handle late frame updates in the current active state
         currentState.LateUpdateState();
     }
+    #endregion
+
+
+    #region Input Handling
+
+    private void HandlePauseInput(InputAction.CallbackContext context)
+    {
+        // ignore input for anything except context.Performed
+        if (context.phase != InputActionPhase.Performed) return;
+
+
+        if (currentState == gameState_Gameplay)
+        {
+            SwitchToState(gameState_Paused);
+        }
+        else if (currentState == gameState_Paused)
+        {
+            SwitchToState(gameState_Gameplay);
+        }
+    }
+
+    private void HandleInventoryInput(InputAction.CallbackContext context)
+    {
+        // ignore input for anything except context.Performed
+        if (context.phase != InputActionPhase.Performed) return;
+
+
+        if (currentState == gameState_Gameplay)
+        {
+            SwitchToState(gameState_PlayerInventory);
+        }
+        else if (currentState == gameState_PlayerInventory)
+        {
+            SwitchToState(gameState_Gameplay);
+        }
+    }
+
+
+
+
     #endregion
 
     #region Button Call Methods
@@ -132,15 +187,13 @@ public class GameStateManager : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
-
     }
 
 
 
-
-
-
     #endregion
+
+
 
 
 }

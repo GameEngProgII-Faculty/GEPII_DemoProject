@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class InteractionManager : MonoBehaviour
@@ -14,7 +12,7 @@ public class InteractionManager : MonoBehaviour
     private InputManager inputManager => InputManager.Instance;
 
     [Header("Interaction Settings")]
-    private LayerMask interactableLayer;
+    [SerializeField] private LayerMask interactableLayer = 1 << 6; // "Interactable" layer
     [SerializeField] private float interactionDistance = 3f;
 
 
@@ -30,6 +28,9 @@ public class InteractionManager : MonoBehaviour
 
     // Interface reference used internally
     private IInteractable currentFocusedInteractable;
+
+    // Read-only access for other systems (e.g. GameState_Gameplay's left-click tool use) to see what's currently focused
+    public IInteractable CurrentFocusedInteractable => currentFocusedInteractable;
 
     private Transform cameraRoot; // Reference to the player's camera root transform
 
@@ -49,9 +50,26 @@ public class InteractionManager : MonoBehaviour
 
         #endregion
 
-        Debug.Log($"{GetType().Name}: Initialized");
+        //Debug.Log($"{GetType().Name}: Initialized");
     }
-   
+
+    private void Start()
+    {
+        cameraRoot = PlayerController.Instance.CameraRoot;
+        initialized = cameraRoot != null;
+
+        InventoryManager.Instance.OnSelectedSlotChanged += HandleSelectedSlotChanged;
+    }
+
+    // Re-evaluate the prompt when the equipped tool changes (e.g. a required-tool interactable's
+    // prompt needs to flip from "Requires Axe" to "[LMB] Harvest Wood" without the focus changing).
+    private void HandleSelectedSlotChanged(int slotIndex)
+    {
+        if (currentFocusedInteractable == null) return;
+
+        UIManager.Instance.ShowInteractPrompt(currentFocusedInteractable.GetInteractionPrompt());
+    }
+
 
     private void Update()
     {
@@ -86,12 +104,9 @@ public class InteractionManager : MonoBehaviour
                     currentFocusedInteractable.SetFocus(true);
 
                     // 3. Get the prompt text from interactable and tell the UI to show it
-
-                    // use reference to UI text to pass through Interact Prompt
-
-
+                    UIManager.Instance.ShowInteractPrompt(currentFocusedInteractable.GetInteractionPrompt());
                 }
-            } 
+            }
         }
         else if (currentFocusedInteractable != null)
         {
@@ -99,6 +114,8 @@ public class InteractionManager : MonoBehaviour
             currentFocusedInteractable = null;
 
             DebugCurrentInteractable = null;
+
+            UIManager.Instance.HideInteractPrompt();
         }
 
     }
@@ -112,12 +129,14 @@ public class InteractionManager : MonoBehaviour
 
         if (context.performed)
         {
-            if (currentFocusedInteractable != null)
+            // ResourceNodes only respond to the left-click "use tool" action (see
+            // GameState_Gameplay.HandleUseToolInput) - the standard Interact (E) button doesn't apply.
+            if (currentFocusedInteractable != null && currentFocusedInteractable is not ResourceNode)
             {
                 currentFocusedInteractable.OnInteract();
             }
         }
-       
+
 
     }
 
@@ -130,6 +149,11 @@ public class InteractionManager : MonoBehaviour
     private void OnDestroy()
     {
         inputManager.InteractInputEvent -= OnInteractInput;
+
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.OnSelectedSlotChanged -= HandleSelectedSlotChanged;
+        }
     }
 
 
