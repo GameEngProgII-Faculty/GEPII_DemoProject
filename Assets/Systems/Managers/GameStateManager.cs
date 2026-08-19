@@ -26,7 +26,7 @@ public class GameStateManager : MonoBehaviour
     GameState_Paused gameState_Paused => GameState_Paused.Instance;
     GameState_BootLoad gameState_BootLoad => GameState_BootLoad.Instance;
     GameState_Loading gameState_Loading => GameState_Loading.Instance;
-    GameState_PlayerInventory gameState_PlayerInventory => GameState_PlayerInventory.Instance;
+    GameState_Inventory gameState_Inventory => GameState_Inventory.Instance;
 
     private void Awake()
     {
@@ -60,11 +60,16 @@ public class GameStateManager : MonoBehaviour
         inputManager.OnInventoryInputEvent += HandleInventoryInput;
     }
 
+    // True while Gameplay is the active state - lets systems that run independently of the
+    // state machine (e.g. InteractionManager's world raycast) know when they should be live.
+    public bool IsGameplayActive => currentState == gameState_Gameplay;
+
     private void OnDestroy()
     {
         // Unsubscribe from necessary input events
         inputManager.OnPauseInputEvent -= HandlePauseInput;
         inputManager.OnInventoryInputEvent -= HandleInventoryInput;
+ 
     }
 
     public void SwitchToState(IState newState)
@@ -115,12 +120,11 @@ public class GameStateManager : MonoBehaviour
         // ignore input for anything except context.Performed
         if (context.phase != InputActionPhase.Performed) return;
 
-
         if (currentState == gameState_Gameplay)
         {
             SwitchToState(gameState_Paused);
         }
-        else if (currentState == gameState_Paused)
+        else if (currentState == gameState_Paused || currentState == gameState_Inventory)
         {
             SwitchToState(gameState_Gameplay);
         }
@@ -131,23 +135,26 @@ public class GameStateManager : MonoBehaviour
         // ignore input for anything except context.Performed
         if (context.phase != InputActionPhase.Performed) return;
 
-
         if (currentState == gameState_Gameplay)
         {
-            SwitchToState(gameState_PlayerInventory);
+            SwitchToState(gameState_Inventory);
         }
-        else if (currentState == gameState_PlayerInventory)
+        else if (currentState == gameState_Inventory)
         {
             SwitchToState(gameState_Gameplay);
         }
     }
 
-
-
-
     #endregion
 
-    #region Button Call Methods
+    public void ReturnToGameplay()
+    {
+        if (currentState != gameState_Paused && currentState != gameState_Inventory)
+            return;
+
+        SwitchToState(gameState_Gameplay);
+    }
+    
 
     public void Pause()
     {
@@ -160,18 +167,7 @@ public class GameStateManager : MonoBehaviour
             return;
         }
     }
-
-    public void Resume()
-    {
-        if (currentState != gameState_Paused)
-            return;
-
-        if (currentState == gameState_Paused)
-        {
-            SwitchToState(gameState_Gameplay);
-            return;
-        }
-    }
+  
 
     public void Play()
     {
@@ -191,7 +187,7 @@ public class GameStateManager : MonoBehaviour
 
 
 
-    #endregion
+
 
 
 

@@ -67,7 +67,7 @@ public class PauseUIController : MonoBehaviour
     {
         Debug.Log("Resume Clicked");
 
-        gameStateManager.Resume();
+        gameStateManager.ReturnToGameplay();
     }
 
     private void OnOptionsClicked()

@@ -86,18 +86,10 @@ public class InventoryManager : MonoBehaviour
         ChangeSelectedSlot(slotToSelect);
     }
 
-    public void OpenContainer(int slotCount)
+    public void OpenContainer(InventoryContainer container)
     {
-        // Get Container Size
-
-        // Based on Type and Size open UI and Loadamount of slots needed
-
-        UIManager.Instance.ShowInventoryContainer(slotCount);
-
-        // then populate contents.
-
-
-
+        GameState_Inventory.Instance.SetOpenContainer(container);
+        GameStateManager.Instance.SwitchToState(GameState_Inventory.Instance);
     }
 
     public void ChangeSelectedSlot(int newValue)
@@ -249,6 +241,78 @@ public class InventoryManager : MonoBehaviour
         heldItem = null;
         heldItemOriginSlot = null;
         heldItemGhost = null;
+    }
+
+    // Released over a specific panel but not over any specific slot within it: stack onto a
+    // matching slot in that same panel with room if one exists, otherwise drop into that panel's
+    // first empty slot. Scoped to whichever panel was actually dropped on, so e.g. dragging from
+    // the toolbar onto empty backpack space lands in the backpack, not back in the toolbar.
+    public void DropHeldItemIntoSlots(InventorySlot[] slots)
+    {
+        if (heldItem == null) return;
+
+        if (TryStackHeldItem(slots)) return;
+
+        TryPlaceHeldItemInFirstEmptySlot(slots);
+    }
+
+    // Fallback for when the drop can't be attributed to a specific panel (e.g. the panel doesn't
+    // expose a slot array to target yet): toolbar preferred, then backpack, same order as
+    // AddItemtoInventory.
+    public void DropHeldItemIntoInventory()
+    {
+        if (heldItem == null) return;
+
+        if (TryStackHeldItem(toolbarSlots) || TryStackHeldItem(backpackSlots)) return;
+
+        if (!TryPlaceHeldItemInFirstEmptySlot(toolbarSlots))
+        {
+            TryPlaceHeldItemInFirstEmptySlot(backpackSlots);
+        }
+    }
+
+    private bool TryStackHeldItem(InventorySlot[] slots)
+    {
+        foreach (InventorySlot slot in slots)
+        {
+            if (slot == null) continue; // Unassigned array element (e.g. missing Inspector wiring)
+
+            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+            if (itemInSlot == null ||
+                itemInSlot.item != heldItem.item ||
+                !itemInSlot.item.stackable ||
+                itemInSlot.count + heldItem.count > itemStackLimit)
+            {
+                continue;
+            }
+
+            itemInSlot.count += heldItem.count;
+            itemInSlot.RefreshCount();
+
+            Destroy(heldItem.gameObject);
+            Destroy(heldItemGhost);
+
+            heldItem = null;
+            heldItemOriginSlot = null;
+            heldItemGhost = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryPlaceHeldItemInFirstEmptySlot(InventorySlot[] slots)
+    {
+        foreach (InventorySlot slot in slots)
+        {
+            if (slot != null && slot.GetComponentInChildren<InventoryItem>() == null)
+            {
+                PlaceHeldItem(slot);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private GameObject CreateGhost(InventorySlot slot, Item item, int count)

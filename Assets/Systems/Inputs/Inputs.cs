@@ -228,7 +228,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""InventoryInteract"",
+                    ""name"": ""InventoryDragDrop"",
                     ""type"": ""Button"",
                     ""id"": ""3b8d6c1a-9e4f-4a2d-8c5e-6f7a1b2c3d4e"",
                     ""expectedControlType"": """",
@@ -518,7 +518,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""InventoryInteract"",
+                    ""action"": ""InventoryDragDrop"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -555,7 +555,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         m_Player_ToolbarSlot5 = m_Player.FindAction("ToolbarSlot5", throwIfNotFound: true);
         m_Player_ToolbarSlot6 = m_Player.FindAction("ToolbarSlot6", throwIfNotFound: true);
         m_Player_ToolbarScroll = m_Player.FindAction("ToolbarScroll", throwIfNotFound: true);
-        m_Player_InventoryInteract = m_Player.FindAction("InventoryInteract", throwIfNotFound: true);
+        m_Player_InventoryDragDrop = m_Player.FindAction("InventoryDragDrop", throwIfNotFound: true);
         m_Player_UseTool = m_Player.FindAction("UseTool", throwIfNotFound: true);
     }
 
@@ -652,7 +652,7 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ToolbarSlot5;
     private readonly InputAction m_Player_ToolbarSlot6;
     private readonly InputAction m_Player_ToolbarScroll;
-    private readonly InputAction m_Player_InventoryInteract;
+    private readonly InputAction m_Player_InventoryDragDrop;
     private readonly InputAction m_Player_UseTool;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
@@ -726,9 +726,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ToolbarScroll => m_Wrapper.m_Player_ToolbarScroll;
         /// <summary>
-        /// Provides access to the underlying input action "Player/InventoryInteract".
+        /// Provides access to the underlying input action "Player/InventoryDragDrop".
         /// </summary>
-        public InputAction @InventoryInteract => m_Wrapper.m_Player_InventoryInteract;
+        public InputAction @InventoryDragDrop => m_Wrapper.m_Player_InventoryDragDrop;
         /// <summary>
         /// Provides access to the underlying input action "Player/UseTool".
         /// </summary>
@@ -804,9 +804,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @ToolbarScroll.started += instance.OnToolbarScroll;
             @ToolbarScroll.performed += instance.OnToolbarScroll;
             @ToolbarScroll.canceled += instance.OnToolbarScroll;
-            @InventoryInteract.started += instance.OnInventoryInteract;
-            @InventoryInteract.performed += instance.OnInventoryInteract;
-            @InventoryInteract.canceled += instance.OnInventoryInteract;
+            @InventoryDragDrop.started += instance.OnInventoryDragDrop;
+            @InventoryDragDrop.performed += instance.OnInventoryDragDrop;
+            @InventoryDragDrop.canceled += instance.OnInventoryDragDrop;
             @UseTool.started += instance.OnUseTool;
             @UseTool.performed += instance.OnUseTool;
             @UseTool.canceled += instance.OnUseTool;
@@ -866,9 +866,9 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
             @ToolbarScroll.started -= instance.OnToolbarScroll;
             @ToolbarScroll.performed -= instance.OnToolbarScroll;
             @ToolbarScroll.canceled -= instance.OnToolbarScroll;
-            @InventoryInteract.started -= instance.OnInventoryInteract;
-            @InventoryInteract.performed -= instance.OnInventoryInteract;
-            @InventoryInteract.canceled -= instance.OnInventoryInteract;
+            @InventoryDragDrop.started -= instance.OnInventoryDragDrop;
+            @InventoryDragDrop.performed -= instance.OnInventoryDragDrop;
+            @InventoryDragDrop.canceled -= instance.OnInventoryDragDrop;
             @UseTool.started -= instance.OnUseTool;
             @UseTool.performed -= instance.OnUseTool;
             @UseTool.canceled -= instance.OnUseTool;
@@ -1018,12 +1018,12 @@ public partial class @Inputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnToolbarScroll(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "InventoryInteract" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "InventoryDragDrop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInventoryInteract(InputAction.CallbackContext context);
+        void OnInventoryDragDrop(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "UseTool" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

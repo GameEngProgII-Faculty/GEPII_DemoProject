@@ -76,6 +76,22 @@ public class InteractionManager : MonoBehaviour
         if (!initialized)
             return;
 
+        // Don't track/focus world interactables while anything but Gameplay is active (inventory,
+        // pause menu, etc.) - otherwise a focused interactable stays "live" behind the UI and
+        // pressing Interact there (e.g. to close the inventory) can re-trigger it.
+        if (!GameStateManager.Instance.IsGameplayActive)
+        {
+            if (currentFocusedInteractable != null)
+            {
+                currentFocusedInteractable.SetFocus(false);
+                currentFocusedInteractable = null;
+                DebugCurrentInteractable = null;
+                UIManager.Instance.HideInteractPrompt();
+            }
+
+            return;
+        }
+
         HandleInteractionDetection();
     }
 
@@ -122,6 +138,8 @@ public class InteractionManager : MonoBehaviour
 
     private void OnInteractInput(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
+        if (!GameStateManager.Instance.IsGameplayActive) return;
+
         // Cooldown check to prevent spamming interactions
         if (Time.time - lastInteractionTime < interactionCooldown)
             return; // Still cooling down
@@ -143,12 +161,12 @@ public class InteractionManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inputManager.InteractInputEvent += OnInteractInput;
+        inputManager.OnInteractInputEvent += OnInteractInput;
     }
 
     private void OnDestroy()
     {
-        inputManager.InteractInputEvent -= OnInteractInput;
+        inputManager.OnInteractInputEvent -= OnInteractInput;
 
         if (InventoryManager.Instance != null)
         {

@@ -30,10 +30,10 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
     // State-based BUTTON INPUTS (Triggers & Phases)
     // Contextual events that forward the state context (started, performed, canceled).
-    public event Action<InputAction.CallbackContext> JumpInputEvent;
-    public event Action<InputAction.CallbackContext> CrouchInputEvent;
-    public event Action<InputAction.CallbackContext> InteractInputEvent;
-    public event Action<InputAction.CallbackContext> SprintInputEvent;
+    public event Action<InputAction.CallbackContext> OnJumpInputEvent;
+    public event Action<InputAction.CallbackContext> OnCrouchInputEvent;
+    public event Action<InputAction.CallbackContext> OnInteractInputEvent;
+    public event Action<InputAction.CallbackContext> OnSprintInputEvent;
     public event Action<InputAction.CallbackContext> OnInventoryInputEvent;
     public event Action<InputAction.CallbackContext> OnPauseInputEvent;
 
@@ -43,7 +43,7 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
     public event Action<InputAction.CallbackContext> OnToolbarScrollInputEvent;
 
     // Inventory-only pickup/place/drop input, separate from the world "Interact" action
-    public event Action<InputAction.CallbackContext> InventoryInteractInputEvent;
+    public event Action<InputAction.CallbackContext> OnDragDropEvent;
 
     // Left-click "use held tool on whatever's focused" input, e.g. mining a ResourceNode
     public event Action<InputAction.CallbackContext> UseToolInputEvent;
@@ -100,19 +100,19 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
     // Called by the Input System when the jump action state changes.
     // Triggers JumpInputEvent and forwards the action state context to all subscribers.
-    public void OnJump(InputAction.CallbackContext context) => JumpInputEvent?.Invoke(context);
+    public void OnJump(InputAction.CallbackContext context) => OnJumpInputEvent?.Invoke(context);
 
     // Called by the Input System when the crouch action state changes.
     // Triggers CrouchInputEvent and forwards the action state context to all subscribers.
-    public void OnCrouch(InputAction.CallbackContext context) => CrouchInputEvent?.Invoke(context);
+    public void OnCrouch(InputAction.CallbackContext context) => OnCrouchInputEvent?.Invoke(context);
 
     // Called by the Input System when the interact action state changes.
     // Triggers InteractInputEvent and forwards the action state context to all subscribers.
-    public void OnInteract(InputAction.CallbackContext context) => InteractInputEvent?.Invoke(context);
+    public void OnInteract(InputAction.CallbackContext context) => OnInteractInputEvent?.Invoke(context);
 
     // Called by the Input System when the sprint action state changes.
     // Triggers SprintInputEvent and forwards the action state context to all subscribers.
-    public void OnSprint(InputAction.CallbackContext context) => SprintInputEvent?.Invoke(context);
+    public void OnSprint(InputAction.CallbackContext context) => OnSprintInputEvent?.Invoke(context);
 
     public void OnInventory(InputAction.CallbackContext context) => OnInventoryInputEvent?.Invoke(context);
 
@@ -130,7 +130,7 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
 
     public void OnToolbarScroll(InputAction.CallbackContext context) => OnToolbarScrollInputEvent?.Invoke(context);
 
-    public void OnInventoryInteract(InputAction.CallbackContext context) => InventoryInteractInputEvent?.Invoke(context);
+    public void OnInventoryDragDrop(InputAction.CallbackContext context) => OnDragDropEvent?.Invoke(context);
 
     public void OnUseTool(InputAction.CallbackContext context) => UseToolInputEvent?.Invoke(context);
 
@@ -148,6 +148,7 @@ public class InputManager : MonoBehaviour, Inputs.IPlayerActions
         }
     }
 
+    
 
 }
 

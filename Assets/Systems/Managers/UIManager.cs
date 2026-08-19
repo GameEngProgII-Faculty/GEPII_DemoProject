@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+
+
+
+
     // Static singleton instance
     public static UIManager Instance { get; private set; }
 
@@ -27,6 +31,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject backpackPanel;
     [SerializeField] private GameObject containerPanel;
     [SerializeField] private GameObject darkeningPanel;
+
+    // Read-only access so drop-target resolution (GameState_Inventory) can tell which panel a
+    // pointer is over without UIManager needing to know anything about inventory slot logic.
+    public GameObject ToolbarPanel => toolbarPanel;
+    public GameObject BackpackPanel => backpackPanel;
 
 
 
@@ -115,15 +124,8 @@ public class UIManager : MonoBehaviour
 
     public void ShowInventoryContainer(int slotCount)
     {
-        HideAllUIMenus();  
-        
-        toolbarPanel.SetActive(true);
-        gameplayPanel.SetActive(true);
-        backpackPanel.SetActive(true);
+        ShowPlayerBackpack();
         containerPanel.SetActive(true);
-        darkeningPanel.SetActive(true);
-
-        OnToolbarPanelShown?.Invoke();
         BuildInventoryContainer(slotCount);
     }
 
@@ -155,7 +157,7 @@ public class UIManager : MonoBehaviour
 
     #region Inventory Container UI
 
-    public void BuildInventoryContainer(int slotCount)     
+    public void BuildInventoryContainer(int slotCount)
     {
         ClearContainer();
 
@@ -163,15 +165,25 @@ public class UIManager : MonoBehaviour
         {
             Instantiate(slotPrefab, containerSlots.transform);
         }
+
+        // Force the ContentSizeFitters (on containerSlots' grid and on containerPanel itself) to
+        // recompute immediately, so the panel resizes to fit this slot count on the same frame
+        // instead of showing the previous size for a frame first.
+        LayoutRebuilder.ForceRebuildLayoutImmediate(containerSlots as RectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(containerPanel.GetComponent<RectTransform>());
     }
 
     void ClearContainer()
     {
-        // Loop backwards through the children to safely delete them
+        // Loop backwards through the children to safely delete them. Destroy() is deferred to the
+        // end of the frame, so if we left these parented, the immediate layout rebuild right after
+        // (in BuildInventoryContainer) would still count them alongside the newly instantiated
+        // slots and compute an inflated size - unparent first so childCount reflects reality now.
         for (int i = containerSlots.childCount - 1; i >= 0; i--)
         {
-            GameObject child = containerSlots.GetChild(i).gameObject;
-            Destroy(child);
+            Transform child = containerSlots.GetChild(i);
+            child.SetParent(null);
+            Destroy(child.gameObject);
         }
     }
 

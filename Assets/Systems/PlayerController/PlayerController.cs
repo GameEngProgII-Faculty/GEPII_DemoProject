@@ -626,9 +626,9 @@ public class PlayerController : MonoBehaviour
         inputManager.MoveInputEvent += SetMoveInput;
         inputManager.LookInputEvent += SetLookInput;
 
-        inputManager.JumpInputEvent += HandleJumpInput;
-        inputManager.CrouchInputEvent += HandleCrouchInput;
-        inputManager.SprintInputEvent += HandleSprintInput;
+        inputManager.OnJumpInputEvent += HandleJumpInput;
+        inputManager.OnCrouchInputEvent += HandleCrouchInput;
+        inputManager.OnSprintInputEvent += HandleSprintInput;
 
     }
 
@@ -637,9 +637,9 @@ public class PlayerController : MonoBehaviour
         inputManager.MoveInputEvent -= SetMoveInput;
         inputManager.LookInputEvent -= SetLookInput;
 
-        inputManager.JumpInputEvent -= HandleJumpInput;
-        inputManager.CrouchInputEvent -= HandleCrouchInput;
-        inputManager.SprintInputEvent -= HandleSprintInput;
+        inputManager.OnJumpInputEvent -= HandleJumpInput;
+        inputManager.OnCrouchInputEvent -= HandleCrouchInput;
+        inputManager.OnSprintInputEvent -= HandleSprintInput;
 
         if (LevelManager.Instance != null)
         {
