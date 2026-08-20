@@ -2454,6 +2454,7 @@ MonoBehaviour:
   containerID: Chest_01
   containerSlots: 8
   containerType: 0
+  storedItems: []
 --- !u!65 &1135689928
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5153,6 +5154,7 @@ MonoBehaviour:
   containerID: Chest_01
   containerSlots: 12
   containerType: 0
+  storedItems: []
 --- !u!65 &1667221025
 BoxCollider:
   m_ObjectHideFlags: 0

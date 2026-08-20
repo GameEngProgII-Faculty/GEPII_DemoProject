@@ -388,11 +388,28 @@ public class InventoryManager : MonoBehaviour
         return direction.sqrMagnitude > 0.0001f ? direction.normalized : player.forward;
     }
 
-    public void SpawnNewItem(Item item, InventorySlot slot)
+    public void SpawnNewItem(Item item, InventorySlot slot, int count = 1)
     {
         GameObject newItem = Instantiate(inventoryItemPrefab, slot.transform);
         InventoryItem inventoryItem = newItem.GetComponent<InventoryItem>();
         inventoryItem.InitializeItem(item);
+        inventoryItem.count = count;
+        inventoryItem.RefreshCount();
+    }
+
+    // Snapshots whatever's currently sitting in each built container slot back into that
+    // container's persistent storage, so it's still there next time it's opened. Called when the
+    // inventory screen closes with a container open (GameState_Inventory.ExitState).
+    public void SaveContainerContents(InventoryContainer container, InventorySlot[] slots)
+    {
+        for (int i = 0; i < container.storedItems.Length; i++)
+        {
+            InventoryItem itemInSlot = i < slots.Length ? slots[i].GetComponentInChildren<InventoryItem>() : null;
+
+            container.storedItems[i] = itemInSlot != null
+                ? new ContainerItemStack { item = itemInSlot.item, count = itemInSlot.count }
+                : default;
+        }
     }
 
     public Item GetSelectedItem()

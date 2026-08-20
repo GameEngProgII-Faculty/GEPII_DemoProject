@@ -12,6 +12,18 @@ public class InventoryContainer : BaseInteractable
 
     public int Slots => containerSlots;
 
+    // Persisted contents, index-aligned with the slots built in the container UI. Lives on this
+    // instance so each InventoryContainer in the world keeps its own contents independently, and
+    // survives close/reopen since UIManager rebuilds the slot GameObjects from scratch every time.
+    public ContainerItemStack[] storedItems;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        storedItems = new ContainerItemStack[containerSlots];
+    }
+
     public override string GetInteractionPrompt()
     {
         return $"[E] Open Container";
@@ -31,6 +43,15 @@ public enum ContainerType
 {
     StorageBox,
     Corpse
+}
+
+[System.Serializable]
+public struct ContainerItemStack
+{
+    public Item item;
+    public int count;
+
+    public bool IsEmpty => item == null;
 }
 
 

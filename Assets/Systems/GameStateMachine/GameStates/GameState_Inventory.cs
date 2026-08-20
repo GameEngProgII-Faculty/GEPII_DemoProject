@@ -41,7 +41,7 @@ public class GameState_Inventory : IState
 
         if (openContainer != null)
         {
-            uIManager.ShowInventoryContainer(openContainer.Slots);
+            uIManager.ShowInventoryContainer(openContainer);
         }
         else
         {
@@ -161,6 +161,7 @@ public class GameState_Inventory : IState
 
         if (openContainer != null)
         {
+            inventoryManager.SaveContainerContents(openContainer, uIManager.GetContainerSlots());
             openContainer.open = false;
         }
 

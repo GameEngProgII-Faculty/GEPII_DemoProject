@@ -122,11 +122,11 @@ public class UIManager : MonoBehaviour
         OnToolbarPanelShown?.Invoke();
     }
 
-    public void ShowInventoryContainer(int slotCount)
+    public void ShowInventoryContainer(InventoryContainer container)
     {
         ShowPlayerBackpack();
         containerPanel.SetActive(true);
-        BuildInventoryContainer(slotCount);
+        BuildInventoryContainer(container);
     }
 
 
@@ -157,13 +157,20 @@ public class UIManager : MonoBehaviour
 
     #region Inventory Container UI
 
-    public void BuildInventoryContainer(int slotCount)
+    public void BuildInventoryContainer(InventoryContainer container)
     {
         ClearContainer();
 
-        for (int i = 0; i < slotCount; i++)
+        for (int i = 0; i < container.Slots; i++)
         {
-            Instantiate(slotPrefab, containerSlots.transform);
+            GameObject slotObj = Instantiate(slotPrefab, containerSlots.transform);
+            InventorySlot slot = slotObj.GetComponent<InventorySlot>();
+
+            ContainerItemStack stored = container.storedItems[i];
+            if (!stored.IsEmpty)
+            {
+                InventoryManager.Instance.SpawnNewItem(stored.item, slot, stored.count);
+            }
         }
 
         // Force the ContentSizeFitters (on containerSlots' grid and on containerPanel itself) to
@@ -171,6 +178,19 @@ public class UIManager : MonoBehaviour
         // instead of showing the previous size for a frame first.
         LayoutRebuilder.ForceRebuildLayoutImmediate(containerSlots as RectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(containerPanel.GetComponent<RectTransform>());
+    }
+
+    // The InventorySlots currently built under containerSlots, in slot-index order - used to read
+    // container contents back out when the inventory screen closes (see SaveContainerContents).
+    public InventorySlot[] GetContainerSlots()
+    {
+        InventorySlot[] slots = new InventorySlot[containerSlots.childCount];
+        for (int i = 0; i < slots.Length; i++)
+        {
+            slots[i] = containerSlots.GetChild(i).GetComponent<InventorySlot>();
+        }
+
+        return slots;
     }
 
     void ClearContainer()

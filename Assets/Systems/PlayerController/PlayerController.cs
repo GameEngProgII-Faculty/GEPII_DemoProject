@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
     [Header("Look Settings")]
     public float horizontalLookSensitivity = 30;
     public float verticalLookSensitivity = 30;
-    public float LowerLookLimit = -60;
+    public float lowerLookLimit = -60;
     public float upperLookLimit = 60;
     public bool invertLookY { get; private set; } = false;
 
@@ -274,10 +274,18 @@ public class PlayerController : MonoBehaviour
 
     public void HandlePlayerLook()
     {
-        if (lookEnabled == false) return; // Check if look is enabled 
+        if (lookEnabled == false) return; // Check if look is enabled
 
-        float lookX = lookInput.x * horizontalLookSensitivity * Time.deltaTime;
-        float lookY = lookInput.y * verticalLookSensitivity * Time.deltaTime;
+        // <Mouse>/delta already reports pixels moved since the last frame - it's a per-frame delta,
+        // not a continuous rate - so multiplying by Time.deltaTime on top double-applies frame
+        // timing, making the rotation amount vary with (and stutter on) frame time fluctuations.
+        // Use a fixed scale instead so a given mouse swing turns the camera the same amount
+        // regardless of framerate. Roughly preserves feel vs. the old deltaTime-scaled formula at
+        // ~60fps - retune horizontalLookSensitivity/verticalLookSensitivity if it feels off.
+        const float mouseDeltaScale = 0.02f;
+
+        float lookX = lookInput.x * horizontalLookSensitivity * mouseDeltaScale;
+        float lookY = lookInput.y * verticalLookSensitivity * mouseDeltaScale;
 
         // Invert vertical look if needed
         if (invertLookY)
@@ -294,7 +302,7 @@ public class PlayerController : MonoBehaviour
 
         // Convert to signed angle for proper clamping
         newRotationX = (newRotationX > 180) ? newRotationX - 360 : newRotationX;
-        newRotationX = Mathf.Clamp(newRotationX, LowerLookLimit, upperLookLimit);
+        newRotationX = Mathf.Clamp(newRotationX, lowerLookLimit, upperLookLimit);
 
         CameraRoot.localEulerAngles = new Vector3(newRotationX, 0, 0);
 
