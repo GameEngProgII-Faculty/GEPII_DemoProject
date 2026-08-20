@@ -9990,9 +9990,9 @@ MonoBehaviour:
   currentMoveSpeed: 0
   sprintInput: 0
   crouchInput: 0
-  horizontalLookSensitivity: 25
-  verticalLookSensitivity: 25
-  LowerLookLimit: -60
+  horizontalLookSensitivity: 15
+  verticalLookSensitivity: 15
+  lowerLookLimit: -60
   upperLookLimit: 60
   isGrounded: 0
   gravity: 30

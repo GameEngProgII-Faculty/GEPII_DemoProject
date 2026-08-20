@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
     private float jumpCooldownAmount = 0.2f; // Time before allowing another jump    
     private float jumpCooldownTimer = 0f;
     private bool jumpRequested = false;
-    private float groundCheckRadius;     // Radius for ground check sphere
+    private float groundCheckRadius;            // Radius for ground check sphere
     private bool groundCheckLayered = false;    // Whether to use LayerMask for ground check
 
     private Vector3 checkSpherePosition; // Y offset for ground check sphere
@@ -282,7 +282,7 @@ public class PlayerController : MonoBehaviour
         // Use a fixed scale instead so a given mouse swing turns the camera the same amount
         // regardless of framerate. Roughly preserves feel vs. the old deltaTime-scaled formula at
         // ~60fps - retune horizontalLookSensitivity/verticalLookSensitivity if it feels off.
-        const float mouseDeltaScale = 0.02f;
+        const float mouseDeltaScale = 0.01f;
 
         float lookX = lookInput.x * horizontalLookSensitivity * mouseDeltaScale;
         float lookY = lookInput.y * verticalLookSensitivity * mouseDeltaScale;
